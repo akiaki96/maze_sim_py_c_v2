@@ -2,70 +2,12 @@ import cv2
 import numpy as np
 from dataclasses import dataclass
 from dir import Dir
-import pprint
-
-
-class Maze:
-    def __init__(self, size: int, vwall: np.ndarray, hwall: np.ndarray):
-        self.size = size
-        self.vwall = vwall
-        self.hwall = hwall
-
-    def __repr__(self):
-        return f"Maze(size={self.size}, vwall shape={self.vwall.shape}, hwall shape={self.hwall.shape})"
-
-    def look_wall(self, x:int, y:int, d: Dir) -> bool:
-        """
-        (x,y)セルの方向dに壁があるか
-        d: 0=E, 1=N, 2=W, 3=S
-        """
-        if d == Dir.EAST:
-            return self.vwall[y, x + 1]
-        elif d == Dir.NORTH:
-            return self.hwall[y + 1, x]
-        elif d == Dir.WEST:
-            return self.vwall[y, x]
-        elif d == Dir.SOUTH:
-            return self.hwall[y, x]
-        else:
-            raise ValueError("Invalid direction")
-
-    def print_maze_ascii(self):
-        N = self.size
-        v = self.vwall
-        h = self.hwall
-
-        print("=== ASCII Maze View (y=N-1 at top) ===")
-
-        for y in reversed(range(N)):
-            # 上側境界（hwall[y+1]がNorth）
-            line_top = ""
-            for x in range(N):
-                line_top += "+"
-                line_top += "---" if self.look_wall(x, y, Dir.NORTH) else "   "
-            line_top += "+"
-            print(line_top)
-
-            # 左右境界（vwall[y,x]がWest）
-            line_mid = ""
-            for x in range(N):
-                line_mid += "|" if self.look_wall(x, y, Dir.WEST) else " "
-                line_mid += "   "
-            line_mid += "|" if self.look_wall(N - 1, y, Dir.EAST) else " "
-            print(line_mid)
-
-        # 最下段境界
-        line_bottom = ""
-        for x in range(N):
-            line_bottom += "+"
-            line_bottom += "---" if self.look_wall(x, 0, Dir.SOUTH) else "   "
-        line_bottom += "+"
-        print(line_bottom)
+from maze import Maze
 
 # ============================================================
 # 1. 便利関数：画像を二値化して「壁=1, 空白=0」に統一する
 # ============================================================
-def binarize_wall_image(img_bgr):
+def __binarize_wall_image(img_bgr):
     """
     入力画像（カラー）を二値化して、壁=1, 床=0 の画像を返す。
     """
@@ -86,7 +28,7 @@ def binarize_wall_image(img_bgr):
 # ============================================================
 # 2. 便利関数：迷路領域の外枠を見つけてトリミングする
 # ============================================================
-def crop_maze_region(bw01):
+def __crop_maze_region(bw01):
     """
     二値画像(bw01)から迷路外枠を探して、迷路部分だけ切り出す。
     """
@@ -247,25 +189,9 @@ def extract_walls(trim, N, threshold=0.25):
     return vwall.astype(bool), hwall.astype(bool)
 
 
-# ============================================================
-# 6. cell bit生成
-# ============================================================
-def make_cellwall(vwall_bool, hwall_bool):
-    """
-    cell[x,y] = E + N + W + S
-    """
-    cellwall = (
-        1 * vwall_bool[:, 1:] +      # East
-        2 * hwall_bool[1:, :] +      # North (境界の上側)
-        4 * vwall_bool[:, :-1] +     # West
-        8 * hwall_bool[:-1, :]       # South (境界の下側)
-    ).astype(np.uint8)
-
-    return cellwall
-
 
 # ============================================================
-# 7. メイン関数：迷路画像からMaze構造体を生成
+# 6. メイン関数：迷路画像からMaze構造体を生成
 # ============================================================
 def parse_maze_image(filename: str, normalize_size: int = 1600) -> Maze:
     """
@@ -282,12 +208,12 @@ def parse_maze_image(filename: str, normalize_size: int = 1600) -> Maze:
     # ------------------------------------------------------------
     # 二値化（壁=1）
     # ------------------------------------------------------------
-    bw01 = binarize_wall_image(original)
+    bw01 = __binarize_wall_image(original)
 
     # ------------------------------------------------------------
     # 外枠でトリミング
     # ------------------------------------------------------------
-    trim = crop_maze_region(bw01)
+    trim = __crop_maze_region(bw01)
 
     # ------------------------------------------------------------
     # サイズ正規化

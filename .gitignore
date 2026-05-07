@@ -1,2 +1,4 @@
 myenv/
 __pycache__/
+solver/solver.dll
+solver/.build_hash

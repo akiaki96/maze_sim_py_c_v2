@@ -10,4 +10,22 @@ class Dir(IntEnum):
     SOUTH = 6
     SOUTHEAST = 7
 
+    def dir_to_str(self):
+        if self == Dir.EAST:
+            return "EAST"
+        elif self == Dir.NORTHEAST:
+            return "NORTHEAST"
+        elif self == Dir.NORTH:
+            return "NORTH"
+        elif self == Dir.NORTHWEST:
+            return "NORTHWEST"
+        elif self == Dir.WEST:
+            return "WEST"
+        elif self == Dir.SOUTHWEST:
+            return "SOUTHWEST"
+        elif self == Dir.SOUTH:
+            return "SOUTH"
+        elif self == Dir.SOUTHEAST:
+            return "SOUTHEAST"
+
 
