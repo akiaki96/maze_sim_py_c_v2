@@ -58,36 +58,36 @@ T name##_peek_at_Nth(const name *deque, T index) {\
     return deque->array[position];\
 }\
 
-#define def_vector_c(T, name, len)                           \
+#define def_vector_c(T, name)                           \
     void name##_init(name* vec) {                       \
-        vec->value[len] = 0;                                  \
+        vec->size = 0;                                    \
     }                                                   \
                                                         \
     void name##_push(name* vec, T value) {              \
-        vec->value[vec->value[len]++] = value;                \
+        vec->value[vec->size++] = value;                \
     }                                                   \
                                                         \
     T name##_pop(name* vec) {                           \
-        return vec->value[vec->value[len]--];                 \
+        return vec->value[vec->size--];                 \
     }                                                   \
                                                         \
     void name##_insert(name* vec, int16_t place, T item){\
-        for (int16_t i = vec->value[len]-1; i >= place; i--) { \
+        for (int16_t i = vec->size-1; i >= place; i--) { \
             vec->value[i+1] = vec->value[i];            \
         }                                               \
         vec->value[place] = item;                       \
-        vec->value[len]++;                                    \
+        vec->size++;                                    \
     }                                                   \
                                                         \
     void name##_remove(name* vec, int16_t place) {       \
-        for (int16_t i = place; i < vec->value[len]; i++) {    \
+        for (int16_t i = place; i < vec->size; i++) {    \
             vec->value[i] = vec->value[i+1];            \
         }                                               \
-        vec->value[len]--;                                    \
+        vec->size--;                                    \
     }                                                   \
 
 def_deque_c(uint8_t, uint8_deque)
-def_vector_c(uint8_t, uint8_vector, 255)
+def_vector_c(uint8_t, uint8_vector)
 
 
 bool is_visited(MousePos* pos, int8_t look_dir) {

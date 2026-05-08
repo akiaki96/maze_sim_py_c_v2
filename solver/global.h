@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,10 +27,10 @@ T name##_pop_front(name*);\
 T name##_pop_back(name*);\
 T name##_peek_at_Nth(const name*, T);\
 
-// size := value[-1]
 #define def_vector_h(T, name, len)              \
     typedef struct {                            \
-        T value[len+1];                           \
+        T value[len];                           \
+        int16_t size;                          \
     } name;                                     \
                                                 \
     void name##_init(name* vec);                \
@@ -39,7 +40,7 @@ T name##_peek_at_Nth(const name*, T);\
     void name##_remove(name*, int16_t);          \
 
 def_deque_h(uint8_t, uint8_deque, 256)
-def_vector_h(uint8_t, uint8_vector, 255)
+def_vector_h(uint8_t, uint8_vector, 256)
 
 typedef struct
 {
