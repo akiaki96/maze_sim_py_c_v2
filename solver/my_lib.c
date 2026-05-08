@@ -91,7 +91,7 @@ def_vector_c(uint8_t, uint8_vector)
 
 
 bool is_visited(MousePos* pos, int8_t look_dir) {
-    uint8_t dir = (pos->dir + look_dir + 4) % 4;
+    uint8_t dir = (pos->dir + look_dir + 8) % 8;
     if (dir == EAST) {
         return visited[pos->y][pos->x+1];
     } else if (dir == NORTH) {
@@ -106,18 +106,20 @@ bool is_visited(MousePos* pos, int8_t look_dir) {
 
 void move_mousePos(MousePos* pos, int8_t move_dir) {
     if (move_dir == TO_LEFT) {
-        pos->dir = (pos->dir + 3) % 4;
+        pos->dir = (pos->dir + TO_LEFT + 8) % 8;
     } else if (move_dir == TO_RIGHT) {
-        pos->dir = (pos->dir + 1) % 4;
-    } else if (move_dir == TO_FRONT) {
-        if (pos->dir == EAST) {
-            pos->x += 1;
-        } else if (pos->dir == NORTH) {
-            pos->y += 1;
-        } else if (pos->dir == WEST) {
-            pos->x -= 1;
-        } else if (pos->dir == SOUTH) {
-            pos->y -= 1;
-        }
+        pos->dir = (pos->dir + TO_RIGHT + 8) % 8;
+    } else if (move_dir == TO_BACK) {
+        pos->dir = (pos->dir + TO_BACK + 8) % 8;
+    }
+
+    if (pos->dir == EAST) {
+        pos->x += 1;
+    } else if (pos->dir == NORTH) {
+        pos->y += 1;
+    } else if (pos->dir == WEST) {
+        pos->x -= 1;
+    } else if (pos->dir == SOUTH) {
+        pos->y -= 1;
     }
 }

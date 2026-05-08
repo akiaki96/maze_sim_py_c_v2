@@ -1,5 +1,11 @@
 from enum import IntEnum
 
+class LookAt(IntEnum):
+    FRONT = 0
+    LEFT = 2
+    BACK = 4
+    RIGHT = 6
+
 class Dir(IntEnum):
     EAST = 0
     NORTHEAST = 1
@@ -27,5 +33,8 @@ class Dir(IntEnum):
             return "SOUTH"
         elif self == Dir.SOUTHEAST:
             return "SOUTHEAST"
+
+    def look_dir(self, relative_dir:LookAt):
+        return Dir((self + relative_dir) % 8)
 
 

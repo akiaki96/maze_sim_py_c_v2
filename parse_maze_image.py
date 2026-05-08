@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from dataclasses import dataclass
-from dir import Dir
+from dir import Dir, LookAt
 from maze import Maze
 
 # ============================================================
@@ -261,4 +261,15 @@ if __name__ == "__main__":
     maze = parse_maze_image(sys.argv[1])
 
     print(maze)
-    maze.print_maze_ascii()
+    # maze.print_maze_ascii()
+
+    x = 7
+    y = 7
+    dir = Dir.NORTH
+    left = maze.look_wall(x, y, dir.look_dir(LookAt.LEFT))
+    front = maze.look_wall(x, y, dir.look_dir(LookAt.FRONT))
+    right = maze.look_wall(x, y, dir.look_dir(LookAt.RIGHT))
+    # left = maze.look_wall(x, y, Dir.WEST)
+    # front = maze.look_wall(x, y, Dir.NORTH)
+    # right = maze.look_wall(x, y, Dir.EAST)
+    print("walls: left={}, front={}, right={}".format(left, front, right))

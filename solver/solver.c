@@ -20,7 +20,15 @@ void solver_init_map() {
         map[0][x] |= 0xf2;
         map[15][x] |= 0xf8;
     }
-}
+
+    for (int8_t y = 0; y < 16; y++)
+    {
+        for (int8_t x = 0; x < 16; x++)
+        {
+            visited[y][x] = false;
+        }
+    }
+}    
 
 void solver_init_all() {
     solver_init_pos();

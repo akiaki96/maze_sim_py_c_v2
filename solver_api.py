@@ -33,7 +33,7 @@ class SolverAPI:
     def init_all(self):
         self.dll.solver_init_all()
 
-    def solver_left_wall(self, left_wall, front_wall, right_wall):
+    def solver_left_wall(self, left_wall: bool, front_wall: bool, right_wall: bool):
         return self.dll.solver_left_wall(left_wall, front_wall, right_wall)
 
 
@@ -42,5 +42,5 @@ if __name__ == "__main__":
     api.init_all()
     result = api.solver_left_wall(True, False, True)
     print("Result size:", result.size)
-    print("Result values:", list(result.value)[:result.size])    
+    print("Result values:", list(result.value)[:result.size])
     

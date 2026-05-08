@@ -50,13 +50,18 @@ typedef struct
 } MousePos;
 
 #define EAST 0
-#define NORTH 1
-#define WEST 2
-#define SOUTH 3
-#define TO_LEFT -1
+#define NORTHEAST 1
+#define NORTH 2
+#define NORTHWEST 3
+#define WEST 4
+#define SOUTHWEST 5
+#define SOUTH 6
+#define SOUTHEAST 7
+
 #define TO_FRONT 0
-#define TO_RIGHT 1
-#define TO_BACK 2
+#define TO_LEFT 2
+#define TO_BACK 4
+#define TO_RIGHT 6
 
 bool is_visited(MousePos* pos, int8_t look_dir);
 void move_mousePos(MousePos* pos, int8_t move_dir);
@@ -67,24 +72,7 @@ void solver_init_map();
 void solver_init_all();
 
 /* action */
-typedef enum {
-    ACT_None = 40,
-    // 基本移動（今のmacroと一致）
-    ACT_MOVE_1CELL,
-    ACT_TURN_LEFT_MOVE,
-    ACT_TURN_RIGHT_MOVE,
-    ACT_TURN_BACK,
-
-    // 将来拡張用
-    ACT_MOVE_HALF_CELL,
-    ACT_BIG_TURN_LEFT,
-    ACT_BIG_TURN_RIGHT,
-    ACT_SLALOM_LEFT,
-    ACT_SLALOM_RIGHT,
-
-    ACT_FINISH,
-    ACT_ERROR
-} Action;
+#include "action.h"
 
 #ifdef GLOBAL_C
 #define LET_GLOBAL

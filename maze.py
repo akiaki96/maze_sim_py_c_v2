@@ -49,7 +49,7 @@ class Maze:
         else:
             raise ValueError("Invalid direction")
 
-    def print_maze_ascii(self):
+    def print_maze_ascii(self, visited=None, mouse_pos=None):
         N = self.size
         v = self.vwall
         h = self.hwall
@@ -69,7 +69,13 @@ class Maze:
             line_mid = ""
             for x in range(N):
                 line_mid += "|" if self.look_wall(x, y, Dir.WEST) else " "
-                line_mid += "   "
+                if mouse_pos is not None and mouse_pos.x == x and mouse_pos.y == y:
+                    # red
+                    line_mid += " \033[91m*\033[0m "
+                elif visited is not None and visited[y][x]:
+                    line_mid += " * "
+                else:
+                    line_mid += "   "
             line_mid += "|" if self.look_wall(N - 1, y, Dir.EAST) else " "
             print(line_mid)
 
