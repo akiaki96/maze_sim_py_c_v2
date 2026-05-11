@@ -2,6 +2,7 @@ import pygame
 from typing import Tuple
 from maze import Maze
 from parse_maze_image import parse_maze_image
+from dir import Dir
 
 class MazeRenderer:
     def __init__(self, screen, cell_size :int = 40, wall_thickness : int = 4, margin: int = 50):
@@ -145,6 +146,27 @@ class MazeRenderer:
                     else:
                         pygame.draw.line(self.screen, self.bg_color, start, end, t)
 
+    def draw_mouse(self, screen, maze_size: int, gx: int, gy: int, direction: int):
+        cx, cy = self.grid_to_screen(maze_size, gx, gy)
+
+
+        r = int(self.cell_size * 0.22)
+        pygame.draw.circle(screen, self.mouse_color, (cx, cy), r)
+
+        # 方向線
+        if direction == Dir.NORTH:
+            tip = (cx, cy - r)
+        elif direction == Dir.SOUTH:
+            tip = (cx, cy + r)
+        elif direction == Dir.EAST:
+            tip = (cx + r, cy)
+        elif direction == Dir.WEST:
+            tip = (cx - r, cy)
+        else:
+            tip = (cx, cy)  # 斜めはとりあえず描かない
+
+        pygame.draw.line(screen, self.mouse_dir_color, (cx, cy), tip, 3)
+
 class MazeApp:
     def __init__(self, maze_image_path: str, fps: int = 30):
         self.maze_image_path = maze_image_path
@@ -183,6 +205,7 @@ class MazeApp:
         self.renderer.draw_background()
         self.renderer.draw_grid(self.N)
         self.renderer.draw_walls(self.true_maze, known_maze=self.known_maze)
+        self.renderer.draw_mouse(self.screen, self.N, gx=1, gy=1, direction=Dir.NORTH)
 
         pygame.display.flip()
 
