@@ -3,3 +3,4 @@ __pycache__/
 solver/solver.dll
 solver/.build_hash
 solver/libsolver.dylib
+plan-mazeRendererDrawWalls.prompt.md
