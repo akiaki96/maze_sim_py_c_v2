@@ -1,3 +1,5 @@
+import sys
+
 import pygame
 from typing import Tuple
 from maze import Maze
@@ -146,7 +148,7 @@ class MazeRenderer:
                     else:
                         pygame.draw.line(self.screen, self.bg_color, start, end, t)
 
-    def draw_mouse(self, screen, maze_size: int, gx: int, gy: int, direction: int):
+    def draw_mouse(self, screen, maze_size: int, gx: int, gy: int, direction: Dir):
         cx, cy = self.grid_to_screen(maze_size, gx, gy)
 
 
@@ -196,8 +198,10 @@ class MazeApp:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+                pygame.quit()
+                sys.exit()
 
-    def update(self, dt: float):
+    def update(self):
         # 今は何もしないが、探索を入れるならここ
         pass
 
@@ -205,26 +209,30 @@ class MazeApp:
         self.renderer.draw_background()
         self.renderer.draw_grid(self.N)
         self.renderer.draw_walls(self.true_maze, known_maze=self.known_maze)
-        self.renderer.draw_mouse(self.screen, self.N, gx=1, gy=1, direction=Dir.NORTH)
 
-        pygame.display.flip()
 
-    def run(self):
-        self.init_pygame()
 
-        self.running = True
-        while self.running:
-            dt = self.clock.tick(self.fps) / 1000.0
 
-            self.handle_events()
-            self.update(dt)
-            self.draw()
+    def draw_mouse(self, grid_x :int, grid_y :int, grid_dir :Dir):
+        self.renderer.draw_mouse(self.screen, self.N, grid_x, grid_y, grid_dir)
 
-        pygame.quit()
+    def end_loop(self):
+        pygame.display.update()
+        self.clock.tick(self.fps)
+
 
 def main():
     app = MazeApp("maze_image/zennihon_2025.png")
-    app.run()
+    app.init_pygame()
+    while True:
+        app.handle_events()
+        app.draw()
+
+        app.draw_mouse(1,1,Dir.NORTH)
+        
+        pygame.display.flip()
+        app.clock.tick(app.fps)
+
 
 if __name__ == "__main__":
     main()
