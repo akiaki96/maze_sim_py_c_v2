@@ -2,7 +2,7 @@
 #define SOLVER_ACTION_H
 
 typedef enum {
-    ACT_None = 40,
+    ACT_NONE = 40,
     SET_MOUSE_INFO,
     SET_VISITED,
     // 基本移動（今のmacroと一致）

@@ -1,0 +1,64 @@
+{
+    "ACT_MOVE_HALF" : {
+        "sequence" : [
+            {"type":"MOVE", "step":1}
+        ],
+        "duration":0.25
+    },
+
+    "ACT_ROTATE_90" : {
+        "sequence" : [
+            {"type":"ROTATE", "angle":90}
+        ],
+        "duration":0.25
+    },
+
+    "ACT_ROTATE_-90" : {
+        "sequence" : [
+            {"type":"ROTATE", "angle":-90}
+        ],
+        "duration":0.25
+    },
+
+    "ACT_ROTATE_180" : {
+        "sequence" : [
+            {"type":"ROTATE", "angle":180}
+        ],
+        "duration":0.5
+    },
+
+    "ACT_MOVE_1CELL": {
+        "sequence" : [
+            "ACT_MOVE_HALF",
+            "ACT_MOVE_HALF"
+        ],
+        "duration":0.5
+    },
+
+    "ACT_TURN_LEFT_MOVE": {
+        "sequence": [
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_90",
+            "ACT_MOVE_HALF"
+            ],
+            "duration":1
+    },
+
+    "ACT_TURN_RIGHT_MOVE": {
+        "sequence": [
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_-90",
+            "ACT_MOVE_HALF"
+            ],
+            "duration":1
+    },
+
+    "ACT_TURN_BACK": {
+        "sequence": [
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_180",
+            "ACT_MOVE_HALF"
+            ],
+            "duration":2
+        }
+}
