@@ -30,7 +30,19 @@ void solver_init_map() {
     }
 }    
 
-void solver_init_all() {
+uint8_vector solver_init_all() {
     solver_init_pos();
     solver_init_map();
+    visited[0][0] = true;
+    uint8_vector_init(&action_queue);
+    uint8_vector_push(&action_queue, SET_MOUSE_INFO);
+    uint8_vector_push(&action_queue, 0);
+    uint8_vector_push(&action_queue, 0);
+    uint8_vector_push(&action_queue, NORTH);
+
+    uint8_vector_push(&action_queue, SET_VISITED);
+    uint8_vector_push(&action_queue, 0);
+    uint8_vector_push(&action_queue, 0);
+
+    return action_queue;
 }

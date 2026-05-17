@@ -36,12 +36,11 @@ def main():
     N = TRUE_MAZE.size
 
     known_maze = Maze(N, None, None).empty()
-    visited = [[False] * N for _ in range(N)]
 
     api = SolverAPI()
-    api.init_all()
+    res = api.init_all()
+    m_pos = MousePos(0,0,Dir.NORTH)
     act2num, num2act = load_action_enum()
-    m_pos = MousePos(0, 0, Dir.NORTH)  # 初期位置と向き
 
     app.init_pygame()
 
@@ -49,19 +48,6 @@ def main():
     while app.running:
         app.handle_events()
         
-        left = TRUE_MAZE.look_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.LEFT))
-        front = TRUE_MAZE.look_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.FRONT))
-        right = TRUE_MAZE.look_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.RIGHT))
-        print(f"Mouse info: x={m_pos.x}, y={m_pos.y}, dir={m_pos.dir.dir_to_str()}")
-        print("walls: left={}, front={}, right={}".format(left, front, right))
-        res = api.solver_left_wall(left, front, right)
-        known_maze.set_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.LEFT), left)
-        known_maze.set_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.FRONT), front)
-        known_maze.set_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.RIGHT), right)
-        visited[m_pos.y][m_pos.x] = True
-
-        known_maze.print_maze_ascii(visited=visited, mouse_pos=m_pos)
-
         print("Result size:", res.size)
         print("Result values:", list(res.value)[:res.size])
 
@@ -72,10 +58,14 @@ def main():
             now = result.pop()
             if now == act2num["ACT_None"]:
                 continue
-            elif now == act2num["DEF_MOUSE_INFO"]:
+            elif now == act2num["SET_MOUSE_INFO"]:
                 m_pos.x = result.pop()
                 m_pos.y = result.pop()
                 m_pos.dir = Dir(result.pop())
+            elif now == act2num["SET_VISITED"]:
+                vx = result.pop()
+                vy = result.pop()
+                app.visited[vy][vx] = True
             else:
                 print(f"Action: {num2act[now]} ({now})")
 
@@ -84,6 +74,18 @@ def main():
         rend_x, rend_y, _ = conv_dir_to_render_dir(m_pos.x, m_pos.y, m_pos.dir)
         app.draw_mouse(rend_x, rend_y, m_pos.dir)
 
+        known_maze.print_maze_ascii(visited=app.visited, mouse_pos=m_pos)
+        left = TRUE_MAZE.look_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.LEFT))
+        front = TRUE_MAZE.look_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.FRONT))
+        right = TRUE_MAZE.look_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.RIGHT))
+        print(f"Mouse info: x={m_pos.x}, y={m_pos.y}, dir={m_pos.dir.dir_to_str()}")
+        print("walls: left={}, front={}, right={}".format(left, front, right))
+        res = api.solver_left_wall(left, front, right)
+        known_maze.set_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.LEFT), left)
+        known_maze.set_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.FRONT), front)
+        known_maze.set_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.RIGHT), right)
+
+        
         app.end_loop()
 
 if __name__ == "__main__":

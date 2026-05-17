@@ -47,7 +47,7 @@ def main():
             now = result.pop()
             if now == act2num["ACT_None"]:
                 continue
-            elif now == act2num["DEF_MOUSE_INFO"]:
+            elif now == act2num["SET_MOUSE_INFO"]:
                 m_pos.x = result.pop()
                 m_pos.y = result.pop()
                 m_pos.dir = Dir(result.pop())

@@ -69,7 +69,7 @@ void move_mousePos(MousePos* pos, int8_t move_dir);
 /* solver.c */
 void solver_init_pos();
 void solver_init_map();
-void solver_init_all();
+uint8_vector solver_init_all();
 
 /* action */
 #include "action.h"

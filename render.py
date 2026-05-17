@@ -148,6 +148,33 @@ class MazeRenderer:
                     else:
                         pygame.draw.line(self.screen, self.bg_color, start, end, t)
 
+    # ============================================================
+    # visitedセル描画
+    # ============================================================
+    def draw_visited_cells(self, maze_size: int, visited):
+        """
+        visited: shape (N,N) bool
+        """
+        if visited is None:
+            return
+
+        N = maze_size
+        cs = self.cell_size
+
+        for y in range(N):
+            for x in range(N):
+                if visited[y][x]:
+                    px, py = self.cell_to_screen(N, x, y)
+
+                    # 塗りつぶし矩形（壁より少し内側に）
+                    rect = pygame.Rect(
+                        px + 2,
+                        py + 2,
+                        cs - 4,
+                        cs - 4
+                    )
+                    pygame.draw.rect(self.screen, self.visited_color, rect)
+
     def draw_mouse(self, screen, maze_size: int, gx: int, gy: int, direction: Dir):
         cx, cy = self.grid_to_screen(maze_size, gx, gy)
 
@@ -179,6 +206,7 @@ class MazeApp:
         self.N = self.true_maze.size
 
         self.known_maze = Maze(self.N, vwall=None, hwall=None).fill()
+        self.visited = [[False for _ in range(self.N)] for _ in range(self.N)]
 
         self.screen = None
         self.clock = None
@@ -209,6 +237,7 @@ class MazeApp:
         self.renderer.draw_background()
         self.renderer.draw_grid(self.N)
         self.renderer.draw_walls(self.true_maze, known_maze=self.known_maze)
+        self.renderer.draw_visited_cells(self.N, self.visited)
 
 
 

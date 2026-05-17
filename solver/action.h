@@ -3,7 +3,8 @@
 
 typedef enum {
     ACT_None = 40,
-    DEF_MOUSE_INFO,
+    SET_MOUSE_INFO,
+    SET_VISITED,
     // 基本移動（今のmacroと一致）
     ACT_MOVE_1CELL,
     ACT_TURN_LEFT_MOVE,
