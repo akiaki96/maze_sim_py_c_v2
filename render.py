@@ -228,6 +228,11 @@ class MazeApp:
                 self.running = False
                 pygame.quit()
                 sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.running = False
+                    pygame.quit()
+                    sys.exit()
 
     def update(self):
         # 今は何もしないが、探索を入れるならここ
