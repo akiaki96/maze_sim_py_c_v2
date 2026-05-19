@@ -43,7 +43,6 @@ def main():
 
         print([num2act.get(x, f"?({x})") for x in result.__reversed__()])
         while result:
-            # todo actionとintの対応を作る
             now = result.pop()
             if now == act2num["ACT_NONE"]:
                 continue
