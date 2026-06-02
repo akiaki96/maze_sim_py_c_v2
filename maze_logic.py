@@ -10,6 +10,37 @@ class MousePos:
         self.y = y
         self.dir = dir
 
+    def __repr__(self):
+        return f"x:{self.x}, y:{self.y}, dir:{self.dir}"
+
+    def move(self, step):
+        if self.dir == Dir.EAST:
+            self.x += step
+        elif self.dir == Dir.NORTH:
+            self.y += step
+        elif self.dir == Dir.WEST:
+            self.x -= step
+        elif self.dir == Dir.SOUTH:
+            self.y -= step
+        elif self.dir == Dir.NORTHEAST:
+            self.x += step
+            self.y += step
+        elif self.dir == Dir.NORTHWEST:
+            self.x -= step
+            self.y += step
+        elif self.dir == Dir.SOUTHWEST:
+            self.x -= step
+            self.y -= step
+        elif self.dir == Dir.SOUTHEAST:
+            self.x += step
+            self.y -= step
+        else:
+            raise ValueError(f"Invalid direction: {self.dir}")
+
+    def rotate(self, deg):
+        self.dir = (self.dir + deg//90) % 8
+
+
 def main():
     TRUE_MAZE = parse_maze_image("maze_image/gakusei_2023.png")
     N = TRUE_MAZE.size
@@ -50,8 +81,15 @@ def main():
                 m_pos.x = result.pop()
                 m_pos.y = result.pop()
                 m_pos.dir = Dir(result.pop())
+            elif now == act2num["SET_VISITED"]:
+                result.pop()
+                result.pop()
             else:
-                print(f"Action: {num2act[now]} ({now})")
+                try:
+                    print(f"Action: {num2act[now]} ({now})")
+                except KeyError:
+                    print(f"now : {now}")
+                    raise KeyError
         input()
 
 if __name__ == "__main__":

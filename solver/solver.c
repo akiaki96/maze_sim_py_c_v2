@@ -44,5 +44,7 @@ uint8_vector solver_init_all() {
     uint8_vector_push(&action_queue, 0);
     uint8_vector_push(&action_queue, 0);
 
+    uint8_vector_push(&action_queue, READ_WALL);
+
     return action_queue;
 }

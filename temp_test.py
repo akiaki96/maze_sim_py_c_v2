@@ -7,6 +7,7 @@ from maze_logic import MousePos
 import pygame
 from typing import Tuple
 from render import MazeRenderer, MazeApp
+from action_solver import Action
 
 def conv_dir_to_render_dir(x:int, y:int, dir: Dir) -> (int, int, Dir):
     """
@@ -40,51 +41,74 @@ def main():
     api = SolverAPI()
     res = api.init_all()
     m_pos = MousePos(0,0,Dir.NORTH)
+    read_wall = False
     act2num, num2act = load_action_enum()
+    result = []
+
+    action = Action("action.json")
 
     app.init_pygame()
 
     app.running = True
+
+    print("Result size:", res.size)
+    print("Result values:", list(res.value)[:res.size])
+
+    # result parser
+    result = list(reversed(list(res.value)[:res.size]))
+    print([num2act.get(x, f"?({x})") for x in result.__reversed__()])
+
     while app.running:
         app.handle_events()
         
-        print("Result size:", res.size)
-        print("Result values:", list(res.value)[:res.size])
-
-        result = list(reversed(list(res.value)[:res.size]))
-
-        print([num2act.get(x, f"?({x})") for x in result.__reversed__()])
-        while result:
+        # while result:
+        if result:
             now = result.pop()
-            if now == act2num["ACT_NONE"]:
-                continue
-            elif now == act2num["SET_MOUSE_INFO"]:
-                m_pos.x = result.pop()
-                m_pos.y = result.pop()
-                m_pos.dir = Dir(result.pop())
-            elif now == act2num["SET_VISITED"]:
-                vx = result.pop()
-                vy = result.pop()
-                app.visited[vy][vx] = True
-            else:
-                print(f"Action: {num2act[now]} ({now})")
+        else:
+            now = act2num["ACT_NONE"]
+        if now == act2num["ACT_NONE"]:
+            pass
+        elif now == act2num["SET_MOUSE_INFO"]:
+            m_pos.x = result.pop()
+            m_pos.y = result.pop()
+            m_pos.dir = Dir(result.pop())
+        elif now == act2num["SET_VISITED"]:
+            vx = result.pop()
+            vy = result.pop()
+            app.visited[vy][vx] = True
+        elif now == act2num["READ_WALL"]:
+            read_wall = True
+        else:
+            print(f"Action: {num2act[now]} ({now})")
+            action.push_action(num2act[now])
+        # len(result) == 0
 
         print(m_pos.x, m_pos.y, m_pos.dir)
         app.draw()
+        # todo MousePosの仕様が変わる
         rend_x, rend_y, _ = conv_dir_to_render_dir(m_pos.x, m_pos.y, m_pos.dir)
         app.draw_mouse(rend_x, rend_y, m_pos.dir)
 
-        known_maze.print_maze_ascii(visited=app.visited, mouse_pos=m_pos)
-        left = TRUE_MAZE.look_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.LEFT))
-        front = TRUE_MAZE.look_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.FRONT))
-        right = TRUE_MAZE.look_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.RIGHT))
-        print(f"Mouse info: x={m_pos.x}, y={m_pos.y}, dir={m_pos.dir.dir_to_str()}")
-        print("walls: left={}, front={}, right={}".format(left, front, right))
-        res = api.solver_left_wall(left, front, right)
-        known_maze.set_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.LEFT), left)
-        known_maze.set_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.FRONT), front)
-        known_maze.set_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.RIGHT), right)
+        if read_wall and not result:
+            known_maze.print_maze_ascii(visited=app.visited, mouse_pos=m_pos)
+            left = TRUE_MAZE.look_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.LEFT))
+            front = TRUE_MAZE.look_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.FRONT))
+            right = TRUE_MAZE.look_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.RIGHT))
+            print(f"Mouse info: x={m_pos.x}, y={m_pos.y}, dir={m_pos.dir.dir_to_str()}")
+            print("walls: left={}, front={}, right={}".format(left, front, right))
+            res = api.solver_left_wall(left, front, right)
+            known_maze.set_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.LEFT), left)
+            known_maze.set_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.FRONT), front)
+            known_maze.set_wall(m_pos.x, m_pos.y, m_pos.dir.look_dir(LookAt.RIGHT), right)
 
+            read_wall = False
+
+            print("Result size:", res.size)
+            print("Result values:", list(res.value)[:res.size])
+
+            # result parser
+            result = list(reversed(list(res.value)[:res.size]))
+            print([num2act.get(x, f"?({x})") for x in result.__reversed__()])
         
         app.end_loop()
 
