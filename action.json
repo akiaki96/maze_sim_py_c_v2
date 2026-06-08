@@ -1,6 +1,6 @@
 {
     "ACT_MOVE_HALF" : {
-        "MOVE":0.5
+        "MOVE":1
     },
 
     "ACT_ROTATE_90" : {
@@ -18,6 +18,12 @@
     "ACT_MOVE_1CELL": {
         "sequence" : [
             "ACT_MOVE_HALF",
+            "ACT_MOVE_HALF"
+        ]
+    },
+
+    "ACT_MOVE_HALF_CELL": {
+        "sequence" : [
             "ACT_MOVE_HALF"
         ]
     },

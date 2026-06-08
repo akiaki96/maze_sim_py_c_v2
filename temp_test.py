@@ -52,7 +52,7 @@ def conv_dir_to_render_dir(x:int, y:int, dir: Dir) -> (int, int, Dir):
 def main():
     maze_image_path = "maze_image/zennihon_2025.png"
     
-    app = MazeApp(maze_image_path, fps=5)
+    app = MazeApp(maze_image_path, fps=20)
 
     TRUE_MAZE = parse_maze_image(maze_image_path)
     N = TRUE_MAZE.size
@@ -62,6 +62,7 @@ def main():
     api = SolverAPI()
     res = api.init_all()
     m_pos = MousePos(0,0,Dir.NORTH)
+    rend_pos = MousePos(1,0,Dir.NORTH)
     read_wall = False
     act2num, num2act = load_action_enum()
     result = []
@@ -90,9 +91,9 @@ def main():
 
         if isinstance(now, dict):
             if "MOVE" in now:
-                m_pos.move(now["MOVE"])
+                rend_pos.move(now["MOVE"])
             elif "ROTATE" in now:
-                m_pos.rotate(now["ROTATE"])
+                rend_pos.rotate(now["ROTATE"])
             else:
                 raise KeyError(f"Unknown atomic action step: {now}")
         elif now == act2num["ACT_NONE"]:
@@ -118,8 +119,7 @@ def main():
         print(m_pos.x, m_pos.y, m_pos.dir)
         app.draw()
         # todo MousePosの仕様が変わる
-        rend_x, rend_y, _ = conv_dir_to_render_dir(m_pos.x, m_pos.y, m_pos.dir)
-        app.draw_mouse(rend_x, rend_y, m_pos.dir)
+        app.draw_mouse(rend_pos.x, rend_pos.y, rend_pos.dir)
 
         if read_wall and not result:
             known_maze.print_maze_ascii(visited=app.visited, mouse_pos=m_pos)

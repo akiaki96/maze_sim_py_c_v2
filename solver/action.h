@@ -11,9 +11,9 @@ typedef enum {
     ACT_TURN_LEFT_MOVE,
     ACT_TURN_RIGHT_MOVE,
     ACT_TURN_BACK,
+    ACT_MOVE_HALF_CELL,
 
     // 将来拡張用
-    ACT_MOVE_HALF_CELL,
     ACT_BIG_TURN_LEFT,
     ACT_BIG_TURN_RIGHT,
     ACT_SLALOM_LEFT,
