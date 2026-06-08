@@ -38,7 +38,7 @@ class MousePos:
             raise ValueError(f"Invalid direction: {self.dir}")
 
     def rotate(self, deg):
-        self.dir = (self.dir + deg//90) % 8
+        self.dir = (self.dir + deg//45) % 8
 
 
 def main():

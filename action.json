@@ -1,6 +1,6 @@
 {
     "ACT_MOVE_HALF" : {
-        "MOVE":1
+        "MOVE":0.5
     },
 
     "ACT_ROTATE_90" : {

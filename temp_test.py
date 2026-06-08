@@ -1,3 +1,5 @@
+import json
+
 from maze import Maze
 from parse_maze_image import parse_maze_image
 from solver_api import SolverAPI
@@ -7,7 +9,25 @@ from maze_logic import MousePos
 import pygame
 from typing import Tuple
 from render import MazeRenderer, MazeApp
-from action_solver import Action
+
+
+def load_action_json(file_path: str) -> dict:
+    with open(file_path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def expand_action(action_name: str, action_dict: dict) -> list[dict]:
+    if action_name not in action_dict:
+        raise KeyError(f"action {action_name} not found in action.json")
+    action = action_dict[action_name]
+    if "sequence" not in action:
+        return [action]
+
+    expanded_steps = []
+    for item in action["sequence"]:
+        expanded_steps.extend(expand_action(item, action_dict))
+    return expanded_steps
+
 
 def conv_dir_to_render_dir(x:int, y:int, dir: Dir) -> (int, int, Dir):
     """
@@ -17,19 +37,20 @@ def conv_dir_to_render_dir(x:int, y:int, dir: Dir) -> (int, int, Dir):
     """
     x = x*2 + 1
     y = y*2 + 1
-    if dir == Dir.NORTH:
-        return x, y-1, Dir.NORTH
-    elif dir == Dir.SOUTH:
-        return x, y+1, Dir.SOUTH
-    elif dir == Dir.EAST:
-        return x-1, y, Dir.EAST
-    elif dir == Dir.WEST:
-        return x+1, y, Dir.WEST
-    else:
-        raise ValueError(f"Invalid direction: {dir}")
+    # if dir == Dir.NORTH:
+    #     return x, y-1, Dir.NORTH
+    # elif dir == Dir.SOUTH:
+    #     return x, y+1, Dir.SOUTH
+    # elif dir == Dir.EAST:
+    #     return x-1, y, Dir.EAST
+    # elif dir == Dir.WEST:
+    #     return x+1, y, Dir.WEST
+    # else:
+    #     raise ValueError(f"Invalid direction: {dir}")
+    return x, y, dir
 
 def main():
-    maze_image_path = "maze_image/gakusei_2023.png"
+    maze_image_path = "maze_image/zennihon_2025.png"
     
     app = MazeApp(maze_image_path, fps=5)
 
@@ -45,7 +66,7 @@ def main():
     act2num, num2act = load_action_enum()
     result = []
 
-    action = Action("action.json")
+    action_dict = load_action_json("action.json")
 
     app.init_pygame()
 
@@ -66,7 +87,15 @@ def main():
             now = result.pop()
         else:
             now = act2num["ACT_NONE"]
-        if now == act2num["ACT_NONE"]:
+
+        if isinstance(now, dict):
+            if "MOVE" in now:
+                m_pos.move(now["MOVE"])
+            elif "ROTATE" in now:
+                m_pos.rotate(now["ROTATE"])
+            else:
+                raise KeyError(f"Unknown atomic action step: {now}")
+        elif now == act2num["ACT_NONE"]:
             pass
         elif now == act2num["SET_MOUSE_INFO"]:
             m_pos.x = result.pop()
@@ -79,8 +108,11 @@ def main():
         elif now == act2num["READ_WALL"]:
             read_wall = True
         else:
-            print(f"Action: {num2act[now]} ({now})")
-            action.push_action(num2act[now])
+            action_name = num2act[now]
+            print(f"Action: {action_name} ({now})")
+            expanded_steps = expand_action(action_name, action_dict)
+            for step in reversed(expanded_steps):
+                result.append(step)
         # len(result) == 0
 
         print(m_pos.x, m_pos.y, m_pos.dir)
