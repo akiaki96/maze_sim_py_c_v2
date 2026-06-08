@@ -58,6 +58,7 @@ def main():
     N = TRUE_MAZE.size
 
     known_maze = Maze(N, None, None).empty()
+    app.known_maze = known_maze
 
     api = SolverAPI()
     res = api.init_all()

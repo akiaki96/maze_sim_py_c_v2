@@ -126,11 +126,12 @@ class MazeRenderer:
 
                 start = (px, py)
                 end   = (px, py + cs)
-                if known_maze is not None and known_maze.vwall[y, xb]:
-                    if maze.vwall[y, xb]:
+                
+                if maze.vwall[y, xb]:
+                    if known_maze is not None and known_maze.vwall[y, xb]:
                         pygame.draw.line(self.screen, self.wall_color, start, end, t)
                     else:
-                        pygame.draw.line(self.screen, self.bg_color, start, end, t)
+                        pygame.draw.line(self.screen, self.unknown_wall_color, start, end, t)
 
         # --------------------------
         # hwall: 横線
@@ -142,11 +143,13 @@ class MazeRenderer:
 
                 start = (px, py)
                 end   = (px + cs, py)
-                if known_maze is not None and known_maze.hwall[yb, x]:
-                    if maze.hwall[yb, x]:
+
+                if maze.hwall[yb, x]:
+                    if known_maze is not None and known_maze.hwall[yb, x]:
                         pygame.draw.line(self.screen, self.wall_color, start, end, t)
                     else:
-                        pygame.draw.line(self.screen, self.bg_color, start, end, t)
+                        pygame.draw.line(self.screen, self.unknown_wall_color, start, end, t)
+
 
     # ============================================================
     # visitedセル描画
