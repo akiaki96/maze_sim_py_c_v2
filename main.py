@@ -1,16 +1,10 @@
-import os
-import json
-import pygame
-import numpy as np
+﻿from maze_logic import MazeSimulation
 
-from parse_maze_image import Maze, parse_maze_image
 
-def main():
-    TRUE_MAZE = parse_maze_image("maze_image\\gakusei_2023.png")
-    N = TRUE_MAZE.size
+def main() -> None:
+    simulation = MazeSimulation("maze_image/zennihon_2025.png", fps=5)
+    simulation.run()
 
-    known_maze = Maze(N, None, None).empty()
-    visited = np.zeros((N, N), dtype=bool)
 
 if __name__ == "__main__":
     main()
