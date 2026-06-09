@@ -28,6 +28,12 @@
         ]
     },
 
+    "ACT_MOVE_FIRST_HALF_CELL": {
+        "sequence" : [
+            "ACT_MOVE_HALF"
+        ]
+    },
+
     "ACT_TURN_LEFT_MOVE": {
         "sequence": [
             "ACT_MOVE_HALF",

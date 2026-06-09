@@ -2,7 +2,7 @@
 
 void solver_init_pos() {
     mousePos.x = 0;
-    mousePos.y = 0;
+    mousePos.y = 1;
     mousePos.dir = NORTH;
 }
 
@@ -43,6 +43,8 @@ uint8_vector solver_init_all() {
     uint8_vector_push(&action_queue, SET_VISITED);
     uint8_vector_push(&action_queue, 0);
     uint8_vector_push(&action_queue, 0);
+
+    uint8_vector_push(&action_queue, ACT_MOVE_FIRST_HALF_CELL); // move first half cell
 
     uint8_vector_push(&action_queue, READ_WALL);
 

@@ -2,7 +2,12 @@
 
 uint8_vector solver_left_wall(bool left, bool front, bool right) {
     uint8_vector_init(&action_queue);
-    uint8_vector_push(&action_queue, ACT_NONE); // dummy
+
+    
+    uint8_vector_push(&action_queue, SET_VISITED);
+    uint8_vector_push(&action_queue, mousePos.x);
+    uint8_vector_push(&action_queue, mousePos.y);
+
     if (!left && !is_visited(&mousePos, TO_LEFT)) {
         uint8_vector_push(&action_queue, ACT_TURN_LEFT_MOVE); // turn left
         move_mousePos(&mousePos, TO_LEFT);
@@ -35,14 +40,12 @@ uint8_vector solver_left_wall(bool left, bool front, bool right) {
         }
     }
 
+
     uint8_vector_push(&action_queue, SET_MOUSE_INFO);
     uint8_vector_push(&action_queue, mousePos.x);
     uint8_vector_push(&action_queue, mousePos.y);
     uint8_vector_push(&action_queue, mousePos.dir);
     
-    uint8_vector_push(&action_queue, SET_VISITED);
-    uint8_vector_push(&action_queue, mousePos.x);
-    uint8_vector_push(&action_queue, mousePos.y);
     uint8_vector_push(&action_queue, READ_WALL);
 
     return action_queue;
