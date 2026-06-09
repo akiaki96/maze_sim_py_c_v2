@@ -1,4 +1,6 @@
 import ctypes
+import json
+import os
 from build_solver import build_solver, get_output_library_path
 
 class uint8_vector(ctypes.Structure):
@@ -8,7 +10,17 @@ class uint8_vector(ctypes.Structure):
     ]
 
 class SolverAPI:
-    def __init__(self):
+    def __init__(self, config_path: str = "solver_config.json"):
+        # Load solver configuration
+        if not os.path.exists(config_path):
+            raise FileNotFoundError(f"Solver config file not found: {config_path}")
+        
+        with open(config_path, 'r', encoding='utf-8') as f:
+            self.config = json.load(f)
+        
+        self.available_solvers = {s['name']: s for s in self.config['available_solvers']}
+        self.default_solver = self.config['default_solver']
+        
         dll_path = build_solver(force=False)
         self.dll = ctypes.CDLL(dll_path)
 
@@ -18,11 +30,18 @@ class SolverAPI:
         self.dll.solver_init_map.argtypes = []
         self.dll.solver_init_map.restype = None
 
-        self.dll.solver_left_wall_init.argtypes = []
-        self.dll.solver_left_wall_init.restype = uint8_vector
-
-        self.dll.solver_left_wall.argtypes = [ctypes.c_bool, ctypes.c_bool, ctypes.c_bool]
-        self.dll.solver_left_wall.restype = uint8_vector
+        # Dynamically setup solver functions based on config
+        for solver in self.config['available_solvers']:
+            init_func_name = solver['init_function']
+            solver_func_name = solver['solver_function']
+            
+            init_func = getattr(self.dll, init_func_name)
+            init_func.argtypes = []
+            init_func.restype = uint8_vector
+            
+            solver_func = getattr(self.dll, solver_func_name)
+            solver_func.argtypes = [ctypes.c_bool, ctypes.c_bool, ctypes.c_bool]
+            solver_func.restype = uint8_vector
 
     def init_pos(self):
         self.dll.solver_init_pos()
@@ -30,11 +49,40 @@ class SolverAPI:
     def init_map(self):
         self.dll.solver_init_map()
 
+    def get_solver_list(self):
+        """Available solver names."""
+        return list(self.available_solvers.keys())
+    
+    def get_solver_info(self, solver_name: str):
+        """Get solver metadata."""
+        if solver_name not in self.available_solvers:
+            raise ValueError(f"Solver '{solver_name}' not found. Available: {self.get_solver_list()}")
+        return self.available_solvers[solver_name]
+    
+    def solver_init(self, solver_name: str):
+        """Call initialization function for the specified solver."""
+        solver_info = self.get_solver_info(solver_name)
+        init_func = getattr(self.dll, solver_info['init_function'])
+        return init_func()
+    
+    def solver_step(self, solver_name: str, left_wall: bool, front_wall: bool, right_wall: bool):
+        """Call solver step function for the specified solver."""
+        solver_info = self.get_solver_info(solver_name)
+        solver_func = getattr(self.dll, solver_info['solver_function'])
+        return solver_func(left_wall, front_wall, right_wall)
+    
+    # Legacy methods for backward compatibility
     def init_all(self):
-        return self.dll.solver_left_wall_init()
+        return self.solver_init("left_wall")
 
     def solver_left_wall(self, left_wall: bool, front_wall: bool, right_wall: bool):
-        return self.dll.solver_left_wall(left_wall, front_wall, right_wall)
+        return self.solver_step("left_wall", left_wall, front_wall, right_wall)
+
+    def adachi_init(self):
+        return self.solver_init("adachi")
+
+    def solver_adachi(self, left_wall: bool, front_wall: bool, right_wall: bool):
+        return self.solver_step("adachi", left_wall, front_wall, right_wall)
 
 
 if __name__ == "__main__":

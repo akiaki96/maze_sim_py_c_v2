@@ -1,0 +1,19 @@
+{
+  "available_solvers": [
+    {
+      "name": "left_wall",
+      "display_name": "Left Wall Solver",
+      "description": "左壁をたどるシンプルなソルバー",
+      "init_function": "solver_left_wall_init",
+      "solver_function": "solver_left_wall"
+    },
+    {
+      "name": "adachi",
+      "display_name": "Adachi Solver",
+      "description": "迷路を最適に探索するソルバー",
+      "init_function": "solver_adachi_init",
+      "solver_function": "solver_adachi"
+    }
+  ],
+  "default_solver": "adachi"
+}

@@ -24,10 +24,10 @@ void wall_reset_one(Wall* wall) {
 }
 
 void set_wall(Wall* wall, uint8_t x, uint8_t y, AbsDir dir, bool tf) {
-    if (x >= 16) {
+    if (x >= MAZE_SIZE) {
         return;
     }
-    if (y >= 16) {
+    if (y >= MAZE_SIZE) {
         return;
     }
     if (x == 0 && dir == Wst) {
@@ -65,10 +65,10 @@ void set_wall(Wall* wall, uint8_t x, uint8_t y, AbsDir dir, bool tf) {
 }
 
 bool get_wall_abs(const Wall* wall, uint8_t x, uint8_t y, AbsDir dir) {
-    if (x >= 16) {
+    if (x >= MAZE_SIZE) {
         return true;
     }
-    if (y >= 16) {
+    if (y >= MAZE_SIZE) {
         return true;
     }
     if (x == 0 && dir == Wst) {

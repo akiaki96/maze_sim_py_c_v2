@@ -94,13 +94,13 @@ uint8_t calc_genpath(Wall* wallzero, uint8_t nowx, uint8_t nowy, AbsDir nowdir, 
         pos_to_xy(current_pos, &tempx, &tempy);
         current_pos = prev_pos[tempy][tempx];
         if (current_pos - temp_pos == 1) {
-            result_dir = Est;
-        } else if (current_pos - temp_pos == -1) {
             result_dir = Wst;
+        } else if (current_pos - temp_pos == -1) {
+            result_dir = Est;
         } else if (current_pos - temp_pos == MAZE_SIZE) {
-            result_dir = Nth;
-        } else if (current_pos - temp_pos == -MAZE_SIZE) {
             result_dir = Sth;
+        } else if (current_pos - temp_pos == -MAZE_SIZE) {
+            result_dir = Nth;
         }
         temp_pos = current_pos;
     }
@@ -109,6 +109,8 @@ uint8_t calc_genpath(Wall* wallzero, uint8_t nowx, uint8_t nowy, AbsDir nowdir, 
 }
 
 uint8_vector solver_adachi(bool left, bool front, bool right) {
+
+    uint8_vector_init(&action_queue);
 
     uint8_vector_push(&action_queue, SET_VISITED);
     uint8_vector_push(&action_queue, mousePos.x);
@@ -121,23 +123,22 @@ uint8_vector solver_adachi(bool left, bool front, bool right) {
     set_wall(&wallone, mousePos.x, mousePos.y, relToAbsDir(mousePos.dir, Rr90), right);
     set_wall(&wallzero, mousePos.x, mousePos.y, relToAbsDir(mousePos.dir, Rr90), right);
 
+    // print_wall(&wallzero);
+
     uint8_t next_dir = calc_genpath(&wallzero, mousePos.x, mousePos.y, mousePos.dir, 7, 7);
     if (next_dir == mousePos.dir) {
         uint8_vector_push(&action_queue, ACT_MOVE_1CELL);
-        adv_pos(&mousePos.x, &mousePos.y, mousePos.dir);
     } else if (next_dir == relToAbsDir(mousePos.dir, Rl90)) {
         uint8_vector_push(&action_queue, ACT_TURN_LEFT_MOVE);
         mousePos.dir = relToAbsDir(mousePos.dir, Rl90);
-        adv_pos(&mousePos.x, &mousePos.y, mousePos.dir);
     } else if (next_dir == relToAbsDir(mousePos.dir, Rr90)) {
         uint8_vector_push(&action_queue, ACT_TURN_RIGHT_MOVE);
         mousePos.dir = relToAbsDir(mousePos.dir, Rr90);
-        adv_pos(&mousePos.x, &mousePos.y, mousePos.dir);
     } else {
         uint8_vector_push(&action_queue, ACT_TURN_BACK);
         mousePos.dir = relToAbsDir(mousePos.dir, R180);
-        adv_pos(&mousePos.x, &mousePos.y, mousePos.dir);
     }
+    adv_pos(&mousePos.x, &mousePos.y, mousePos.dir);
 
     uint8_vector_push(&action_queue, SET_MOUSE_INFO);
     uint8_vector_push(&action_queue, mousePos.x);
@@ -145,4 +146,6 @@ uint8_vector solver_adachi(bool left, bool front, bool right) {
     uint8_vector_push(&action_queue, mousePos.dir);
 
     uint8_vector_push(&action_queue, READ_WALL);
+
+    return action_queue;
 }

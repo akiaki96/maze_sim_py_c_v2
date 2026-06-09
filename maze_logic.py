@@ -45,7 +45,7 @@ class MousePos:
 
 
 class MazeSimulation:
-    def __init__(self, maze_image_path: str = "maze_image/zennihon_2025.png", fps: int = 5, action_json_path: str = "action.json"):
+    def __init__(self, maze_image_path: str = "maze_image/zennihon_2025.png", fps: int = 5, action_json_path: str = "action.json", solver_type: str | None = None):
         self.maze_image_path = maze_image_path
         self.fps = fps
         self.action_json_path = action_json_path
@@ -56,6 +56,20 @@ class MazeSimulation:
         self.app.known_maze = self.known_maze
 
         self.api = SolverAPI()
+        
+        # Use default solver if not specified
+        if solver_type is None:
+            self.solver_type = self.api.default_solver
+        else:
+            self.solver_type = solver_type
+        
+        # Validate solver type
+        available = self.api.get_solver_list()
+        if self.solver_type not in available:
+            raise ValueError(f"Unknown solver type: '{self.solver_type}'. Available solvers: {available}")
+        
+        self._print_solver_info()
+        
         self.act2num, self.num2act = load_action_enum()
         self.action_dict = load_action_json(self.action_json_path)
 
@@ -63,9 +77,21 @@ class MazeSimulation:
         self.rend_pos = MousePos(1, 1, Dir.NORTH)
         self.read_wall = False
         self.result: list[Any] = []
+    
+    def _print_solver_info(self) -> None:
+        """Print information about the current solver and available solvers."""
+        solver_info = self.api.get_solver_info(self.solver_type)
+        print(f"\n=== Solver Configuration ===")
+        print(f"Current solver: {solver_info['display_name']}")
+        print(f"Description: {solver_info['description']}")
+        print(f"\nAvailable solvers:")
+        for name in self.api.get_solver_list():
+            info = self.api.get_solver_info(name)
+            print(f"  - {name}: {info['display_name']}")
+        print(f"==========================\n")
 
     def initialize(self) -> None:
-        res = self.api.init_all()
+        res = self.api.solver_init(self.solver_type)
         self._update_result(res)
         self._log_result(res, "Initial result")
 
@@ -140,7 +166,8 @@ class MazeSimulation:
         print(f"Mouse info: x={self.m_pos.x}, y={self.m_pos.y}, dir={self.m_pos.dir.dir_to_str()}")
         print("walls: left={}, front={}, right={}".format(left, front, right))
 
-        res = self.api.solver_left_wall(left, front, right)
+        res = self.api.solver_step(self.solver_type, left, front, right)
+        
         self.known_maze.set_wall(self.m_pos.x, self.m_pos.y, self.m_pos.dir.look_dir(LookAt.LEFT), left)
         self.known_maze.set_wall(self.m_pos.x, self.m_pos.y, self.m_pos.dir.look_dir(LookAt.FRONT), front)
         self.known_maze.set_wall(self.m_pos.x, self.m_pos.y, self.m_pos.dir.look_dir(LookAt.RIGHT), right)
@@ -151,6 +178,8 @@ class MazeSimulation:
 
 
 def main() -> None:
+    # solver_typeを指定しない場合、solver_config.jsonのdefault_solverが使用される
+    # solver_typeを指定する場合: "left_wall" または "adachi"
     simulation = MazeSimulation("maze_image/zennihon_2025.png", fps=5)
     simulation.run()
 
