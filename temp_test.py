@@ -5,28 +5,11 @@ from parse_maze_image import parse_maze_image
 from solver_api import SolverAPI
 from dir import Dir, LookAt
 from action_enum import load_action_enum
+from action_loader import expand_action, load_action_json
 from maze_logic import MousePos
 import pygame
 from typing import Tuple
-from render import MazeRenderer, MazeApp
-
-
-def load_action_json(file_path: str) -> dict:
-    with open(file_path, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-
-def expand_action(action_name: str, action_dict: dict) -> list[dict]:
-    if action_name not in action_dict:
-        raise KeyError(f"action {action_name} not found in action.json")
-    action = action_dict[action_name]
-    if "sequence" not in action:
-        return [action]
-
-    expanded_steps = []
-    for item in action["sequence"]:
-        expanded_steps.extend(expand_action(item, action_dict))
-    return expanded_steps
+from render import MazeApp
 
 
 def conv_dir_to_render_dir(x:int, y:int, dir: Dir) -> (int, int, Dir):
