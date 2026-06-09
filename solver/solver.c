@@ -30,7 +30,7 @@ void solver_init_map() {
     }
 }    
 
-uint8_vector solver_init_all() {
+uint8_vector solver_left_wall_init() {
     solver_init_pos();
     solver_init_map();
     visited[0][0] = true;
@@ -49,4 +49,24 @@ uint8_vector solver_init_all() {
     uint8_vector_push(&action_queue, READ_WALL);
 
     return action_queue;
+}
+
+uint8_vector solver_adachi_init() {
+    solver_init_pos();
+    solver_init_map();
+    wall_reset_one(&wallone);
+    wall_reset_zero(&wallzero);
+
+    visited[0][0] = true;
+    uint8_vector_init(&action_queue);
+    uint8_vector_push(&action_queue, SET_MOUSE_INFO);
+    uint8_vector_push(&action_queue, 0);
+    uint8_vector_push(&action_queue, 1);
+    uint8_vector_push(&action_queue, NORTH);
+
+    uint8_vector_push(&action_queue, SET_VISITED);
+    uint8_vector_push(&action_queue, 0);
+    uint8_vector_push(&action_queue, 0);
+
+    uint8_vector_push(&action_queue, ACT_MOVE_FIRST_HALF_CELL); // move first half cell
 }

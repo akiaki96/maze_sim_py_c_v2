@@ -69,7 +69,7 @@ void move_mousePos(MousePos* pos, int8_t move_dir);
 /* solver.c */
 void solver_init_pos();
 void solver_init_map();
-uint8_vector solver_init_all();
+uint8_vector solver_left_wall_init();
 
 /* action */
 #include "action.h"
@@ -85,6 +85,35 @@ LET_GLOBAL MousePos mousePos;
 LET_GLOBAL uint8_t map[16][16];
 LET_GLOBAL uint8_t visited[16][16];
 
+/* maze.c */
+#define MAZE_SIZE 16
+// MAZE_SIZE == 16
+typedef struct wall_t {
+    uint16_t wall_ver[MAZE_SIZE];
+    uint16_t wall_hor[MAZE_SIZE];
+} Wall;
+
+typedef struct {
+    uint16_t mbit[MAZE_SIZE];
+} MazeBit;
+typedef enum {Est, NthEst, Nth, NthWst, Wst, SthWst, Sth, SthEst} AbsDir;
+typedef enum {R0, Rl45, Rl90, Rl135, R180, Rr135, Rr90, Rr45} RelDir;
+
+uint8_t xy_to_pos(uint8_t, uint8_t);
+void pos_to_xy(uint8_t, uint8_t*, uint8_t*);
+
+void wall_reset_zero(Wall*);
+void wall_reset_one(Wall*);
+void set_wall(Wall*, uint8_t, uint8_t, AbsDir, bool);
+bool get_wall_abs(const Wall*, uint8_t, uint8_t, AbsDir);
+void print_wall(Wall*);
+void print_wall_dist(Wall*, uint16_t[16][16][4], uint8_t);
+void mazebit_zero(MazeBit*);
+void mazebit_one(MazeBit*);
+bool mazebit_get(MazeBit*, uint8_t, uint8_t);
+void mazebit_set(MazeBit*, uint8_t, uint8_t, bool);
+
+LET_GLOBAL Wall wallzero, wallone;
 
 /* ---------- */
 #ifdef __cplusplus

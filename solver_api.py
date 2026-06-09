@@ -18,8 +18,8 @@ class SolverAPI:
         self.dll.solver_init_map.argtypes = []
         self.dll.solver_init_map.restype = None
 
-        self.dll.solver_init_all.argtypes = []
-        self.dll.solver_init_all.restype = uint8_vector
+        self.dll.solver_left_wall_init.argtypes = []
+        self.dll.solver_left_wall_init.restype = uint8_vector
 
         self.dll.solver_left_wall.argtypes = [ctypes.c_bool, ctypes.c_bool, ctypes.c_bool]
         self.dll.solver_left_wall.restype = uint8_vector
@@ -31,7 +31,7 @@ class SolverAPI:
         self.dll.solver_init_map()
 
     def init_all(self):
-        return self.dll.solver_init_all()
+        return self.dll.solver_left_wall_init()
 
     def solver_left_wall(self, left_wall: bool, front_wall: bool, right_wall: bool):
         return self.dll.solver_left_wall(left_wall, front_wall, right_wall)
