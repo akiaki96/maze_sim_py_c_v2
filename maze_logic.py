@@ -110,12 +110,16 @@ class MazeSimulation:
 
         while self.app.running:
             self.app.handle_events()
-            self._process_next_step()
+
+            if not self.app.paused:
+                self._process_next_step()
+
+                if self.read_wall and not self.result:
+                    self._read_and_update_walls()
+
             self.app.draw()
             self.app.draw_mouse(self.rend_pos.x, self.rend_pos.y, self.rend_pos.dir)
-
-            if self.read_wall and not self.result:
-                self._read_and_update_walls()
+            self.app.draw_pause_overlay()
 
             self.app.end_loop()
 

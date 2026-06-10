@@ -224,6 +224,8 @@ class MazeApp:
         self.renderer = MazeRenderer(self.screen, cell_size=renderer_cell_size, margin=renderer_margin)
         pygame.display.set_caption("Maze Renderer")
         self.clock = pygame.time.Clock()
+        self.font = pygame.font.Font(None, 32)
+        self.paused = False
     
     def handle_events(self):
         for event in pygame.event.get():
@@ -236,6 +238,9 @@ class MazeApp:
                     self.running = False
                     pygame.quit()
                     sys.exit()
+                elif event.key in (pygame.K_SPACE, pygame.K_p):
+                    self.paused = not self.paused
+                    print("Paused" if self.paused else "Resumed")
 
     def update(self):
         # 今は何もしないが、探索を入れるならここ
@@ -247,11 +252,20 @@ class MazeApp:
         self.renderer.draw_walls(self.true_maze, known_maze=self.known_maze)
         self.renderer.draw_visited_cells(self.N, self.visited)
 
-
-
-
     def draw_mouse(self, grid_x :int, grid_y :int, grid_dir :Dir):
         self.renderer.draw_mouse(self.screen, self.N, grid_x, grid_y, grid_dir)
+
+    def draw_pause_overlay(self):
+        if not self.paused:
+            return
+
+        overlay_text = "PAUSED - Press SPACE or P to resume"
+        text_surface = self.font.render(overlay_text, True, (255, 255, 255))
+        text_rect = text_surface.get_rect(center=(self.screen_size // 2, self.screen_size - 30))
+        bg_rect = text_rect.inflate(20, 12)
+        pygame.draw.rect(self.screen, (0, 0, 0), bg_rect)
+        pygame.draw.rect(self.screen, (255, 255, 255), bg_rect, 2)
+        self.screen.blit(text_surface, text_rect)
 
     def end_loop(self):
         pygame.display.update()
