@@ -3,10 +3,6 @@
 uint8_t dist_map[MAZE_SIZE][MAZE_SIZE];
 uint8_t prev_pos[MAZE_SIZE][MAZE_SIZE];
 
-uint8_t xy_to_num(uint8_t x, uint8_t y) {
-    return (uint8_t)(y*MAZE_SIZE + x);
-}
-
 /*
 Est + Rl90 -> Nth
 */
@@ -47,7 +43,7 @@ uint8_t calc_genpath(Wall* wallzero, uint8_t nowx, uint8_t nowy, AbsDir nowdir, 
     uint8_deque queue;
     uint8_deque_init(&queue);
     
-    uint8_t pos = xy_to_num(nowx, nowy);
+    uint8_t pos = xy_to_pos(nowx, nowy);
     uint8_deque_push_back(&queue, pos);
     
     while (!uint8_deque_is_empty(&queue)) {
@@ -80,15 +76,15 @@ uint8_t calc_genpath(Wall* wallzero, uint8_t nowx, uint8_t nowy, AbsDir nowdir, 
             
             // Update distance and push to queue
             dist_map[ny][nx] = current_dist + 1;
-            uint8_t next_pos = xy_to_num(nx, ny);
+            uint8_t next_pos = xy_to_pos(nx, ny);
             uint8_deque_push_back(&queue, next_pos);
             prev_pos[ny][nx] = current_pos;
         }
     }
 
     uint8_t tempx, tempy;
-    uint8_t current_pos = xy_to_num(goalx, goaly);
-    uint8_t temp_pos = xy_to_num(goalx, goaly);
+    uint8_t current_pos = xy_to_pos(goalx, goaly);
+    uint8_t temp_pos = xy_to_pos(goalx, goaly);
     uint8_t result_dir;
     while (current_pos != 0xFF) {
         pos_to_xy(current_pos, &tempx, &tempy);

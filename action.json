@@ -72,15 +72,31 @@
             ]
     }, 
 
-    "ACT_S45_LEFT": {
+    "ACT_S45_in_LEFT": {
         "sequence": [
             "ACT_MOVE_HALF",
             "ACT_ROTATE_45",
+            "ACT_MOSVE_HALF"
+        ]
+    },
+
+    "ACT_S45_in_RIGHT": {
+        "sequence": [
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_-45",
             "ACT_MOVE_HALF"
         ]
     },
 
-    "ACT_S45_RIGHT": {
+    "ACT_S45_out_LEFT": {
+        "sequence": [
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_45",
+            "ACT_MOSVE_HALF"
+        ]
+    },
+
+    "ACT_S45_out_RIGHT": {
         "sequence": [
             "ACT_MOVE_HALF",
             "ACT_ROTATE_-45",
@@ -134,7 +150,7 @@
         ]
     },
     
-    "ACT_S135_LEFT": {
+    "ACT_S135_in_LEFT": {
         "sequence": [
             "ACT_MOVE_HALF",
             "ACT_MOVE_HALF",
@@ -145,13 +161,35 @@
         ]
     },
 
-    "ACT_S135_RIGHT": {
+    "ACT_S135_in_RIGHT": {
         "sequence": [
             "ACT_MOVE_HALF",
             "ACT_MOVE_HALF",
             "ACT_ROTATE_-90",
             "ACT_MOVE_HALF",
             "ACT_ROTATE_-45",
+            "ACT_MOVE_HALF"
+        ]
+    },
+
+    "ACT_S135_out_LEFT": {
+        "sequence": [
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_45",
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_90",
+            "ACT_MOVE_HALF",
+            "ACT_MOVE_HALF"
+        ]
+    },
+
+    "ACT_S135_out_RIGHT": {
+        "sequence": [
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_-45",
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_-90",
+            "ACT_MOVE_HALF",
             "ACT_MOVE_HALF"
         ]
     },
