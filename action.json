@@ -3,6 +3,13 @@
         "MOVE":1
     },
 
+    "ACT_ROTATE_45": {
+        "ROTATE":45
+    },
+    "ACT_ROTATE_-45": {
+        "ROTATE":-45
+    },
+
     "ACT_ROTATE_90" : {
         "ROTATE":90
     },
@@ -13,6 +20,13 @@
 
     "ACT_ROTATE_180" : {
         "ROTATE":180
+    },
+
+    "ACT_ROTATE_135": {
+        "ROTATE":135
+    },
+    "ACT_ROTATE_-135": {
+        "ROTATE":-135
     },
 
     "ACT_MOVE_1CELL": {
@@ -56,5 +70,106 @@
             "ACT_ROTATE_180",
             "ACT_MOVE_HALF"
             ]
-        }
+    }, 
+
+    "ACT_S45_LEFT": {
+        "sequence": [
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_45",
+            "ACT_MOVE_HALF"
+        ]
+    },
+
+    "ACT_S45_RIGHT": {
+        "sequence": [
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_-45",
+            "ACT_MOVE_HALF"
+        ]
+    },
+
+    "ACT_S90_LEFT": {
+        "sequence": [
+            "ACT_MOVE_HALF",
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_90",
+            "ACT_MOVE_HALF",
+            "ACT_MOVE_HALF"
+        ]
+    },
+
+    "ACT_S90_RIGHT": {
+        "sequence": [
+            "ACT_MOVE_HALF",
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_-90",
+            "ACT_MOVE_HALF",
+            "ACT_MOVE_HALF"
+        ]
+    },
+
+    "ACT_S180_LEFT": {
+        "sequence": [
+            "ACT_MOVE_HALF",
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_90",
+            "ACT_MOVE_HALF",
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_90",
+            "ACT_MOVE_HALF",
+            "ACT_MOVE_HALF"
+        ]
+    },
+
+    "ACT_S180_RIGHT": {
+        "sequence": [
+            "ACT_MOVE_HALF",
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_-90",
+            "ACT_MOVE_HALF",
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_-90",
+            "ACT_MOVE_HALF",
+            "ACT_MOVE_HALF"
+        ]
+    },
+    
+    "ACT_S135_LEFT": {
+        "sequence": [
+            "ACT_MOVE_HALF",
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_90",
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_45",
+            "ACT_MOVE_HALF"
+        ]
+    },
+
+    "ACT_S135_RIGHT": {
+        "sequence": [
+            "ACT_MOVE_HALF",
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_-90",
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_-45",
+            "ACT_MOVE_HALF"
+        ]
+    },
+
+    "ACT_V90_LEFT": {
+        "sequence": [
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_90",
+            "ACT_MOVE_HALF"
+        ]
+    },
+
+    "ACT_V90_RIGHT": {
+        "sequence": [
+            "ACT_MOVE_HALF",
+            "ACT_ROTATE_-90",
+            "ACT_MOVE_HALF"
+        ]
+    }
+
 }

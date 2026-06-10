@@ -225,7 +225,7 @@ class MazeApp:
         pygame.display.set_caption("Maze Renderer")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(None, 32)
-        self.paused = False
+        self.paused = True
         self.solver_selection_open = False
         self.solver_selection_index = 0
         self.solver_list = []

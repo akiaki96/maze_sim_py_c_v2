@@ -6,7 +6,7 @@
 
 このプロジェクトは迷路シミュレータを提供し、異なるアルゴリズムによる迷路解法を実装・テストできます。
 - Pythonでの迷路管理と描画
-- C言語での高速なソルバーアルゴリズム
+- C言語での実機に導入できるソルバー
 - 迷路画像のパースと処理
 
 ## 要件
@@ -15,6 +15,14 @@
 - Virtual environment (myenv)
 
 ## インストール
+0. ローカルにダウンロード：
+   ```
+   git clone https://github.com/akiaki96/maze_sim_py_c_v2.git
+   ```
+
+   または
+   https://github.com/akiaki96/maze_sim_py_c_v2
+   からダウンロード
 
 1. 仮想環境を有効化：
    ```
@@ -137,11 +145,15 @@ python solver_api.py
 
 ## ライセンス
 
-<!-- ライセンス情報を追加してください -->
+MIT License
+
+Copyright (c) 2026 akiaki96
 
 ## 参考資料
 
-<!-- 参考資料・外部リンクを追加してください -->
+KERI's Lab <br>
+マイクロマウスのターン一覧 <br>
+https://www.kerislab.jp/posts/2017-09-03-pattern-of-turn/
 
 ## 変更履歴
 
