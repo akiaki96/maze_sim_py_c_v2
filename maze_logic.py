@@ -56,6 +56,7 @@ class MazeSimulation:
         self.app.known_maze = self.known_maze
 
         self.api = SolverAPI()
+        self.available_solvers = self.api.get_solver_list()
         
         # Use default solver if not specified
         if solver_type is None:
@@ -64,9 +65,8 @@ class MazeSimulation:
             self.solver_type = solver_type
         
         # Validate solver type
-        available = self.api.get_solver_list()
-        if self.solver_type not in available:
-            raise ValueError(f"Unknown solver type: '{self.solver_type}'. Available solvers: {available}")
+        if self.solver_type not in self.available_solvers:
+            raise ValueError(f"Unknown solver type: '{self.solver_type}'. Available solvers: {self.available_solvers}")
         
         self._print_solver_info()
         
@@ -78,6 +78,21 @@ class MazeSimulation:
         self.read_wall = False
         self.result: list[Any] = []
     
+    def _reset_python_state(self) -> None:
+        self.known_maze = Maze(self.true_maze.size, None, None).empty()
+        self.app.known_maze = self.known_maze
+        self.app.visited = [[False for _ in range(self.true_maze.size)] for _ in range(self.true_maze.size)]
+        self.m_pos = MousePos(0, 1, Dir.NORTH)
+        self.rend_pos = MousePos(1, 1, Dir.NORTH)
+        self.read_wall = False
+        self.result = []
+
+    def python_left_wall_init(self) -> None:
+        self._reset_python_state()
+
+    def python_adachi_init(self) -> None:
+        self._reset_python_state()
+
     def _print_solver_info(self) -> None:
         """Print information about the current solver and available solvers."""
         solver_info = self.api.get_solver_info(self.solver_type)
@@ -91,6 +106,10 @@ class MazeSimulation:
         print(f"==========================\n")
 
     def initialize(self) -> None:
+        python_init = self.api.get_solver_python_init_function(self.solver_type)
+        if python_init and hasattr(self, python_init):
+            getattr(self, python_init)()
+
         res = self.api.solver_init(self.solver_type)
         self._update_result(res)
         self._log_result(res, "Initial result")
@@ -108,10 +127,18 @@ class MazeSimulation:
         self.app.running = True
         self.initialize()
 
-        while self.app.running:
-            self.app.handle_events()
+        self.app.solver_list = [
+            f"{self.api.get_solver_info(name)['display_name']} ({name})"
+            for name in self.available_solvers
+        ]
+        self.app.solver_selection_index = self.available_solvers.index(self.solver_type)
 
-            if not self.app.paused:
+        while self.app.running:
+            commands = self.app.handle_events()
+
+            if self.app.paused:
+                self._process_pause_commands(commands)
+            else:
                 self._process_next_step()
 
                 if self.read_wall and not self.result:
@@ -119,9 +146,36 @@ class MazeSimulation:
 
             self.app.draw()
             self.app.draw_mouse(self.rend_pos.x, self.rend_pos.y, self.rend_pos.dir)
-            self.app.draw_pause_overlay()
+            self.app.draw_pause_overlay(
+                current_solver=self.solver_type,
+                solver_menu=self.app.solver_list,
+                selection_open=self.app.solver_selection_open,
+                selection_index=self.app.solver_selection_index,
+            )
 
             self.app.end_loop()
+
+    def _process_pause_commands(self, commands: list[Any]) -> None:
+        for command, arg in commands:
+            if command == "REINIT_CURRENT_SOLVER":
+                print(f"Reinitializing solver: {self.solver_type}")
+                self.initialize()
+            elif command == "SELECT_SOLVER":
+                index = arg
+                if index < 0 or index >= len(self.available_solvers):
+                    print(f"Invalid solver index: {index}")
+                    continue
+                self.solver_type = self.available_solvers[index]
+                self.app.solver_selection_index = index
+                print(f"Switching to solver: {self.solver_type}")
+                self.initialize()
+
+    def _build_solver_menu(self) -> list[str]:
+        menu = []
+        for index, solver_name in enumerate(self.available_solvers[:9]):
+            info = self.api.get_solver_info(solver_name)
+            menu.append(f"{index + 1}: {info['display_name']} ({solver_name})")
+        return menu
 
     def _process_next_step(self) -> None:
         if self.result:

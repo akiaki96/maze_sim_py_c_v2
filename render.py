@@ -226,8 +226,12 @@ class MazeApp:
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(None, 32)
         self.paused = False
+        self.solver_selection_open = False
+        self.solver_selection_index = 0
+        self.solver_list = []
     
     def handle_events(self):
+        commands = []
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -241,6 +245,25 @@ class MazeApp:
                 elif event.key in (pygame.K_SPACE, pygame.K_p):
                     self.paused = not self.paused
                     print("Paused" if self.paused else "Resumed")
+                elif self.paused:
+                    if event.key == pygame.K_d:
+                        self.solver_selection_open = not self.solver_selection_open
+                    elif event.key == pygame.K_i:
+                        commands.append(("REINIT_CURRENT_SOLVER", None))
+                    elif self.solver_selection_open:
+                        if event.key == pygame.K_UP:
+                            self.solver_selection_index = max(0, self.solver_selection_index - 1)
+                        elif event.key == pygame.K_DOWN:
+                            self.solver_selection_index = min(
+                                len(self.solver_list) - 1,
+                                self.solver_selection_index + 1
+                            )
+                        elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
+                            commands.append(("SELECT_SOLVER", self.solver_selection_index))
+                    elif pygame.K_1 <= event.key <= pygame.K_9:
+                        commands.append(("SELECT_SOLVER", event.key - pygame.K_1))
+
+        return commands
 
     def update(self):
         # 今は何もしないが、探索を入れるならここ
@@ -255,17 +278,48 @@ class MazeApp:
     def draw_mouse(self, grid_x :int, grid_y :int, grid_dir :Dir):
         self.renderer.draw_mouse(self.screen, self.N, grid_x, grid_y, grid_dir)
 
-    def draw_pause_overlay(self):
+    def draw_pause_overlay(
+        self,
+        current_solver: str | None = None,
+        solver_menu: list[str] | None = None,
+        selection_open: bool = False,
+        selection_index: int = 0,
+    ):
         if not self.paused:
             return
 
-        overlay_text = "PAUSED - Press SPACE or P to resume"
-        text_surface = self.font.render(overlay_text, True, (255, 255, 255))
-        text_rect = text_surface.get_rect(center=(self.screen_size // 2, self.screen_size - 30))
-        bg_rect = text_rect.inflate(20, 12)
-        pygame.draw.rect(self.screen, (0, 0, 0), bg_rect)
-        pygame.draw.rect(self.screen, (255, 255, 255), bg_rect, 2)
-        self.screen.blit(text_surface, text_rect)
+        padding = 8
+        line_height = self.font.get_linesize()
+        lines = [
+            "PAUSED - Press SPACE or P to resume",
+            "D: toggle solver selector",
+            "I: reinitialize current solver",
+            "1-9: init solver from solver_config.json",
+        ]
+        if current_solver:
+            lines.append(f"Current solver: {current_solver}")
+        if solver_menu:
+            lines.append("Solver list:")
+            for index, label in enumerate(solver_menu):
+                prefix = ">" if selection_open and index == selection_index else " "
+                lines.append(f"{prefix} {label}")
+
+        text_surfaces = [self.font.render(line, True, (255, 255, 255)) for line in lines]
+        total_height = len(text_surfaces) * line_height + padding * 2
+        max_width = max(surface.get_width() for surface in text_surfaces) + padding * 2
+        overlay_rect = pygame.Rect(
+            self.renderer.margin,
+            self.screen_size - total_height - self.renderer.margin // 2,
+            max_width,
+            total_height,
+        )
+        pygame.draw.rect(self.screen, (0, 0, 0), overlay_rect)
+        pygame.draw.rect(self.screen, (255, 255, 255), overlay_rect, 2)
+
+        y = overlay_rect.top + padding
+        for surface in text_surfaces:
+            self.screen.blit(surface, (overlay_rect.left + padding, y))
+            y += line_height
 
     def end_loop(self):
         pygame.display.update()

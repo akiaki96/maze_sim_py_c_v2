@@ -5,14 +5,16 @@
       "display_name": "Left Wall Solver",
       "description": "左壁をたどるシンプルなソルバー",
       "init_function": "solver_left_wall_init",
-      "solver_function": "solver_left_wall"
+      "solver_function": "solver_left_wall",
+      "python_init_function": "python_left_wall_init"
     },
     {
       "name": "adachi",
       "display_name": "Adachi Solver",
       "description": "迷路を最適に探索するソルバー",
       "init_function": "solver_adachi_init",
-      "solver_function": "solver_adachi"
+      "solver_function": "solver_adachi",
+      "python_init_function": "python_adachi_init"
     }
   ],
   "default_solver": "adachi"

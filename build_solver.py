@@ -2,6 +2,7 @@ import os
 import subprocess
 import platform
 import hashlib
+import uuid
 
 
 def hash_solver_directory(solver_dir: str) -> str:
@@ -77,7 +78,7 @@ def detect_compiler(out_lib, sources):
         return ["gcc", "-shared", "-fPIC", "-o", out_lib] + sources
 
 
-def build_solver(force=False):
+def build_solver(force=False, out_lib=None):
     root_dir = os.path.dirname(__file__)
     solver_dir = os.path.join(root_dir, "solver")
 
@@ -89,7 +90,10 @@ def build_solver(force=False):
     if not sources:
         raise FileNotFoundError(f"No solver source files found in: {solver_dir}")
 
-    out_lib = get_output_library_path(solver_dir)
+    if out_lib is None:
+        out_lib = get_output_library_path(solver_dir)
+
+    os.makedirs(os.path.dirname(out_lib), exist_ok=True)
 
     hash_file = os.path.join(solver_dir, ".build_hash")
 

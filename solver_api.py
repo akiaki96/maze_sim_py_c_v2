@@ -22,7 +22,12 @@ class SolverAPI:
         self.default_solver = self.config['default_solver']
         
         dll_path = build_solver(force=False)
+        self.current_library_path = dll_path
+        self._load_library(dll_path)
+
+    def _load_library(self, dll_path: str):
         self.dll = ctypes.CDLL(dll_path)
+        self.current_library_path = dll_path
 
         self.dll.solver_init_pos.argtypes = []
         self.dll.solver_init_pos.restype = None
@@ -43,6 +48,15 @@ class SolverAPI:
             solver_func.argtypes = [ctypes.c_bool, ctypes.c_bool, ctypes.c_bool]
             solver_func.restype = uint8_vector
 
+    def call_init_function(self, function_name: str):
+        if not hasattr(self.dll, function_name):
+            raise AttributeError(f"Function not found in solver library: {function_name}")
+
+        func = getattr(self.dll, function_name)
+        func.argtypes = []
+        func.restype = uint8_vector
+        return func()
+
     def init_pos(self):
         self.dll.solver_init_pos()
 
@@ -58,6 +72,10 @@ class SolverAPI:
         if solver_name not in self.available_solvers:
             raise ValueError(f"Solver '{solver_name}' not found. Available: {self.get_solver_list()}")
         return self.available_solvers[solver_name]
+
+    def get_solver_python_init_function(self, solver_name: str):
+        solver_info = self.get_solver_info(solver_name)
+        return solver_info.get("python_init_function")
     
     def solver_init(self, solver_name: str):
         """Call initialization function for the specified solver."""
