@@ -2,7 +2,6 @@ import os
 import subprocess
 import platform
 import hashlib
-import uuid
 
 
 def hash_solver_directory(solver_dir: str) -> str:

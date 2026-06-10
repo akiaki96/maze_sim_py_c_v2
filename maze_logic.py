@@ -57,6 +57,7 @@ class MazeSimulation:
 
         self.api = SolverAPI()
         self.available_solvers = self.api.get_solver_list()
+        self.current_variant = None
         
         # Use default solver if not specified
         if solver_type is None:
@@ -67,6 +68,11 @@ class MazeSimulation:
         # Validate solver type
         if self.solver_type not in self.available_solvers:
             raise ValueError(f"Unknown solver type: '{self.solver_type}'. Available solvers: {self.available_solvers}")
+        
+        # Set to first variant by default
+        variants = self.api.get_init_variants(self.solver_type)
+        if variants:
+            self.current_variant = variants[0]["variant_name"]
         
         self._print_solver_info()
         
@@ -93,6 +99,13 @@ class MazeSimulation:
     def python_adachi_init(self) -> None:
         self._reset_python_state()
 
+    def python_adachi_init_no_reset(self) -> None:
+        """Adachi init without wall reset - preserves visited and known_maze state."""
+        self.m_pos = MousePos(0, 1, Dir.NORTH)
+        self.rend_pos = MousePos(1, 1, Dir.NORTH)
+        self.read_wall = False
+        self.result = []
+
     def _print_solver_info(self) -> None:
         """Print information about the current solver and available solvers."""
         solver_info = self.api.get_solver_info(self.solver_type)
@@ -106,11 +119,11 @@ class MazeSimulation:
         print(f"==========================\n")
 
     def initialize(self) -> None:
-        python_init = self.api.get_solver_python_init_function(self.solver_type)
+        python_init = self.api.get_solver_python_init_function(self.solver_type, self.current_variant)
         if python_init and hasattr(self, python_init):
             getattr(self, python_init)()
 
-        res = self.api.solver_init(self.solver_type)
+        res = self.api.solver_init(self.solver_type, self.current_variant)
         self._update_result(res)
         self._log_result(res, "Initial result")
 
@@ -127,11 +140,8 @@ class MazeSimulation:
         self.app.running = True
         self.initialize()
 
-        self.app.solver_list = [
-            f"{self.api.get_solver_info(name)['display_name']} ({name})"
-            for name in self.available_solvers
-        ]
-        self.app.solver_selection_index = self.available_solvers.index(self.solver_type)
+        self.app.solver_list = self._build_solver_variant_menu()
+        self.app.solver_selection_index = 0
 
         while self.app.running:
             commands = self.app.handle_events()
@@ -147,7 +157,7 @@ class MazeSimulation:
             self.app.draw()
             self.app.draw_mouse(self.rend_pos.x, self.rend_pos.y, self.rend_pos.dir)
             self.app.draw_pause_overlay(
-                current_solver=self.solver_type,
+                current_solver=f"{self.solver_type} ({self.current_variant})",
                 solver_menu=self.app.solver_list,
                 selection_open=self.app.solver_selection_open,
                 selection_index=self.app.solver_selection_index,
@@ -155,20 +165,42 @@ class MazeSimulation:
 
             self.app.end_loop()
 
+    def _build_solver_variant_menu(self) -> list[str]:
+        """Build a flat menu of all solver variants."""
+        menu = []
+        for solver_name in self.available_solvers:
+            solver_info = self.api.get_solver_info(solver_name)
+            variants = self.api.get_init_variants(solver_name)
+            for variant in variants:
+                label = f"{solver_info['display_name']} - {variant['variant_display']}"
+                menu.append(label)
+        return menu
+
     def _process_pause_commands(self, commands: list[Any]) -> None:
         for command, arg in commands:
             if command == "REINIT_CURRENT_SOLVER":
-                print(f"Reinitializing solver: {self.solver_type}")
+                print(f"Reinitializing solver: {self.solver_type} variant {self.current_variant}")
                 self.initialize()
             elif command == "SELECT_SOLVER":
                 index = arg
-                if index < 0 or index >= len(self.available_solvers):
-                    print(f"Invalid solver index: {index}")
+                menu = self._build_solver_variant_menu()
+                if index < 0 or index >= len(menu):
+                    print(f"Invalid variant index: {index}")
                     continue
-                self.solver_type = self.available_solvers[index]
-                self.app.solver_selection_index = index
-                print(f"Switching to solver: {self.solver_type}")
-                self.initialize()
+                
+                # Map flat menu index back to solver and variant
+                flat_index = 0
+                for solver_name in self.available_solvers:
+                    variants = self.api.get_init_variants(solver_name)
+                    for variant in variants:
+                        if flat_index == index:
+                            self.solver_type = solver_name
+                            self.current_variant = variant["variant_name"]
+                            self.app.solver_selection_index = index
+                            print(f"Switching to solver: {self.solver_type}, variant: {self.current_variant}")
+                            self.initialize()
+                            return
+                        flat_index += 1
 
     def _build_solver_menu(self) -> list[str]:
         menu = []

@@ -37,16 +37,18 @@ class SolverAPI:
 
         # Dynamically setup solver functions based on config
         for solver in self.config['available_solvers']:
-            init_func_name = solver['init_function']
             solver_func_name = solver['solver_function']
-            
-            init_func = getattr(self.dll, init_func_name)
-            init_func.argtypes = []
-            init_func.restype = uint8_vector
             
             solver_func = getattr(self.dll, solver_func_name)
             solver_func.argtypes = [ctypes.c_bool, ctypes.c_bool, ctypes.c_bool]
             solver_func.restype = uint8_vector
+            
+            # Setup all init variants
+            for variant in solver.get('init_variants', []):
+                init_func_name = variant['init_function']
+                init_func = getattr(self.dll, init_func_name)
+                init_func.argtypes = []
+                init_func.restype = uint8_vector
 
     def call_init_function(self, function_name: str):
         if not hasattr(self.dll, function_name):
@@ -73,14 +75,41 @@ class SolverAPI:
             raise ValueError(f"Solver '{solver_name}' not found. Available: {self.get_solver_list()}")
         return self.available_solvers[solver_name]
 
-    def get_solver_python_init_function(self, solver_name: str):
+    def get_init_variants(self, solver_name: str) -> list[dict]:
         solver_info = self.get_solver_info(solver_name)
-        return solver_info.get("python_init_function")
+        return solver_info.get("init_variants", [])
+
+    def get_solver_python_init_function(self, solver_name: str, variant_name: str | None = None):
+        """Get Python init function name for the specified solver and variant."""
+        variants = self.get_init_variants(solver_name)
+        
+        if variant_name:
+            variant = next((v for v in variants if v["variant_name"] == variant_name), None)
+            if not variant:
+                raise ValueError(f"Variant '{variant_name}' not found for solver '{solver_name}'")
+        else:
+            variant = variants[0] if variants else None
+        
+        return variant.get("python_init_function") if variant else None
     
-    def solver_init(self, solver_name: str):
-        """Call initialization function for the specified solver."""
+    def solver_init(self, solver_name: str, variant_name: str | None = None):
+        """Call initialization function for the specified solver and variant."""
         solver_info = self.get_solver_info(solver_name)
-        init_func = getattr(self.dll, solver_info['init_function'])
+        
+        if variant_name:
+            variants = self.get_init_variants(solver_name)
+            variant = next((v for v in variants if v["variant_name"] == variant_name), None)
+            if not variant:
+                raise ValueError(f"Variant '{variant_name}' not found for solver '{solver_name}'")
+            init_func_name = variant["init_function"]
+        else:
+            variants = self.get_init_variants(solver_name)
+            if variants:
+                init_func_name = variants[0]["init_function"]
+            else:
+                raise ValueError(f"No init variants found for solver '{solver_name}'")
+        
+        init_func = getattr(self.dll, init_func_name)
         return init_func()
     
     def solver_step(self, solver_name: str, left_wall: bool, front_wall: bool, right_wall: bool):

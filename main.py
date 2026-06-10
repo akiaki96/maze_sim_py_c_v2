@@ -2,7 +2,7 @@
 
 
 def main() -> None:
-    simulation = MazeSimulation("maze_image/zennihon_2025.png", fps=20)
+    simulation = MazeSimulation("maze_image/zennihon_2025.png", fps=40)
     simulation.run()
 
 

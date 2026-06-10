@@ -4,17 +4,35 @@
       "name": "left_wall",
       "display_name": "Left Wall Solver",
       "description": "左壁をたどるシンプルなソルバー",
-      "init_function": "solver_left_wall_init",
       "solver_function": "solver_left_wall",
-      "python_init_function": "python_left_wall_init"
+      "init_variants": [
+        {
+          "variant_name": "standard",
+          "variant_display": "Standard Init",
+          "init_function": "solver_left_wall_init",
+          "python_init_function": "python_left_wall_init"
+        }
+      ]
     },
     {
       "name": "adachi",
       "display_name": "Adachi Solver",
       "description": "迷路を最適に探索するソルバー",
-      "init_function": "solver_adachi_init",
       "solver_function": "solver_adachi",
-      "python_init_function": "python_adachi_init"
+      "init_variants": [
+        {
+          "variant_name": "with_reset",
+          "variant_display": "With Wall Reset",
+          "init_function": "solver_adachi_init",
+          "python_init_function": "python_adachi_init"
+        },
+        {
+          "variant_name": "no_reset",
+          "variant_display": "Without Wall Reset",
+          "init_function": "solver_adachi_init_no_reset",
+          "python_init_function": "python_adachi_init_no_reset"
+        }
+      ]
     }
   ],
   "default_solver": "adachi"
