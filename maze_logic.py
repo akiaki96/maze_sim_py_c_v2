@@ -142,6 +142,12 @@ class MazeSimulation:
             vx = self.result.pop()
             vy = self.result.pop()
             self.app.visited[vy][vx] = True
+        elif now == self.act2num["SET_WALL"]:
+            vx = self.result.pop()
+            vy = self.result.pop()
+            vdir = self.result.pop()
+            vwall = self.result.pop()
+            self.known_maze.set_wall(vx, vy, vdir, vwall)
         elif now == self.act2num["READ_WALL"]:
             self.read_wall = True
         else:
