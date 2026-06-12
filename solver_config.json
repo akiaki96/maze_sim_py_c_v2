@@ -33,7 +33,22 @@
           "python_init_function": "python_adachi_init_no_reset"
         }
       ]
+    },
+    {
+      "name": "time_based_dijekstra",
+      "display_name": "dijekstra",
+      "description": "最短 斜め",
+      "solver_function": "solver_time_based_dijekstra",
+      "init_variants": [
+        {
+          "variant_name": "no_reset",
+          "variant_display": "Without Wall Reset",
+          "init_function": "solver_time_based_dijekstra_init",
+          "python_init_function": "python_adachi_init_no_reset"
+        }
+      ]
     }
+
   ],
   "default_solver": "adachi"
 }
