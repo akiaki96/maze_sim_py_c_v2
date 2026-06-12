@@ -121,6 +121,11 @@ uint8_vector solver_adachi(bool left, bool front, bool right) {
 
     // print_wall(&wallzero);
 
+    if (mousePos.x == 7 && mousePos.y == 7) {
+        uint8_vector_push(&action_queue, ACT_FINISH);
+        return action_queue;
+    }
+
     uint8_t next_dir = calc_genpath(&wallzero, mousePos.x, mousePos.y, mousePos.dir, 7, 7);
     if (next_dir == mousePos.dir) {
         uint8_vector_push(&action_queue, ACT_MOVE_1CELL);

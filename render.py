@@ -284,6 +284,7 @@ class MazeApp:
         solver_menu: list[str] | None = None,
         selection_open: bool = False,
         selection_index: int = 0,
+        short_message: str = ""
     ):
         if not self.paused:
             return
@@ -304,7 +305,13 @@ class MazeApp:
                 prefix = ">" if selection_open and index == selection_index else " "
                 lines.append(f"{prefix} {label}")
 
+            if short_message:
+                lines.append(short_message)
+
         text_surfaces = [self.font.render(line, True, (255, 255, 255)) for line in lines]
+        # テキストに透明度を設定
+        for surface in text_surfaces:
+            surface.set_alpha(100)
         total_height = len(text_surfaces) * line_height + padding * 2
         max_width = max(surface.get_width() for surface in text_surfaces) + padding * 2
         overlay_rect = pygame.Rect(
@@ -313,7 +320,11 @@ class MazeApp:
             max_width,
             total_height,
         )
-        pygame.draw.rect(self.screen, (0, 0, 0), overlay_rect)
+        # 透明度付きサーフェスを作成して描画
+        overlay_surface = pygame.Surface((max_width, total_height))
+        overlay_surface.fill((0, 0, 0))
+        overlay_surface.set_alpha(50)  # 透明度 (0-255, 180は約70%表示)
+        self.screen.blit(overlay_surface, (overlay_rect.left, overlay_rect.top))
         pygame.draw.rect(self.screen, (255, 255, 255), overlay_rect, 2)
 
         y = overlay_rect.top + padding
