@@ -58,6 +58,8 @@ class MazeSimulation:
         self.api = SolverAPI()
         self.available_solvers = self.api.get_solver_list()
         self.current_variant = None
+
+        self.short_message = ""
         
         # Use default solver if not specified
         if solver_type is None:
@@ -92,6 +94,7 @@ class MazeSimulation:
         self.rend_pos = MousePos(1, 1, Dir.NORTH)
         self.read_wall = False
         self.result = []
+        self.short_message = ""
 
     def python_left_wall_init(self) -> None:
         self._reset_python_state()
@@ -105,6 +108,7 @@ class MazeSimulation:
         self.rend_pos = MousePos(1, 1, Dir.NORTH)
         self.read_wall = False
         self.result = []
+        self.short_message = ""
 
     def _print_solver_info(self) -> None:
         """Print information about the current solver and available solvers."""
@@ -161,6 +165,7 @@ class MazeSimulation:
                 solver_menu=self.app.solver_list,
                 selection_open=self.app.solver_selection_open,
                 selection_index=self.app.solver_selection_index,
+                short_message = self.short_message
             )
 
             self.app.end_loop()
@@ -240,6 +245,12 @@ class MazeSimulation:
             self.known_maze.set_wall(vx, vy, vdir, vwall)
         elif now == self.act2num["READ_WALL"]:
             self.read_wall = True
+        elif now == self.act2num["ACT_FINISH"]:
+            self.app.paused = True
+            self.short_message = "FINISH"
+        elif now == self.act2num["ACT_ERROR"]:
+            self.app.paused = True
+            self.short_message = "ERROR"
         else:
             action_name = self.num2act[now]
             print(f"Action: {action_name} ({now})")
