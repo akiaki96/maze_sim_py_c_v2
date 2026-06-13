@@ -31,6 +31,7 @@ typedef enum {
     ACT_V90_LEFT,
     ACT_V90_RIGHT,
 
+    ACT_MOVE_0SEC,
     ACT_MOVE_1SEC,
     ACT_MOVE_2SEC,
     ACT_MOVE_3SEC,
@@ -64,6 +65,7 @@ typedef enum {
     ACT_MOVE_31SEC,
     ACT_MOVE_32SEC,
 
+    ACT_MOVE_0SEC_DIA,
     ACT_MOVE_1SEC_DIA,
     ACT_MOVE_2SEC_DIA,
     ACT_MOVE_3SEC_DIA,

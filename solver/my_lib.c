@@ -86,6 +86,77 @@ T name##_peek_at_Nth(const name *deque, T index) {\
         vec->size--;                                    \
     }                                                   \
 
+#define def_priority_queue_c(T, name)\
+void name##_init(name* queue) {\
+    queue->size = 0;\
+    return;\
+}\
+\
+void name##_push(name* queue, T value){\
+    queue->value[queue->size++] = value;\
+\
+    uint16_t c = queue->size-1;\
+\
+    while(c){\
+        uint16_t p=(c-1)>>1;\
+\
+        if(queue->value[c].fst < queue->value[p].fst){\
+            T tmp = queue->value[c];\
+            queue->value[c] = queue->value[p];\
+            queue->value[p] = tmp;\
+            c=p;\
+        }else{\
+            break;\
+        }\
+    }\
+}\
+\
+\
+T name##_top(name* queue) {\
+    T value = queue->value[0];\
+    return value;\
+}\
+\
+T name##_pop(name* queue){\
+    T value = queue->value[0];\
+\
+    queue->value[0] = queue->value[--queue->size];\
+\
+    uint16_t p=0;\
+    while(p < queue->size){\
+        uint16_t l = (p<<1) + 1;\
+        if(l >= queue->size){\
+            break;\
+        }\
+\
+        uint16_t r = (p<<1) + 2;\
+\
+        uint16_t c;\
+\
+        if(r >= queue->size || queue->value[l].fst < queue->value[r].fst){\
+            c=l;\
+        }else{\
+            c=r;\
+        }\
+\
+        if(queue->value[p].fst >= queue->value[c].fst){\
+            T tmp = queue->value[p];\
+            queue->value[p] = queue->value[c];\
+            queue->value[c] = tmp;\
+            p=c;\
+        }else{\
+            break;\
+        }\
+    }\
+    return value;\
+}\
+\
+bool name##_empty(name* queue) {\
+    return (queue->size != 0);\
+}\
+
+def_priority_queue_c(cost, PQ_cost)
+def_priority_queue_c(smallcost, PQ_smallcost)
 def_deque_c(uint8_t, uint8_deque)
 def_vector_c(uint8_t, uint8_vector)
 

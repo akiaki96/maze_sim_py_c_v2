@@ -39,6 +39,29 @@ T name##_peek_at_Nth(const name*, T);\
     void name##_insert(name*, int16_t, T);       \
     void name##_remove(name*, int16_t);          \
 
+#define def_priority_queue_h(T, name, max_len)\
+typedef struct {\
+    T value[max_len]; \
+    uint16_t size;\
+} name; \
+void name##_init(name*);\
+void name##_push(name* queue, T value); \
+T name##_top(name* queue);\
+T name##_pop(name* queue);\
+bool name##_empty(name* queue); \
+
+#define any_pair(T1, T2, name)  \
+    typedef struct {            \
+        T1 fst;                 \
+        T2 snd;                 \
+    } name;                     \
+
+any_pair(uint16_t, uint32_t, cost)
+def_priority_queue_h(cost, PQ_cost, 100)
+
+any_pair(uint16_t, uint16_t, smallcost)
+def_priority_queue_h(smallcost, PQ_smallcost, 100)
+
 def_deque_h(uint8_t, uint8_deque, 256)
 def_vector_h(uint8_t, uint8_vector, 256)
 
