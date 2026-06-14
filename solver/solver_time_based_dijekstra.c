@@ -238,7 +238,7 @@ void dijkstra_gen_path(uint32_t prvdirl[16][16][4], uint8_t goalx, uint8_t goaly
             uint8_deque_push_front(&temp_dijkstra_rev, ACT_MOVE_0SEC_DIA + (motion & 0x1F));
         } else if (motion & T0grd) {
             printf("T0grd %2d <- ", motion & 0x1F);
-            uint8_deque_push_front(&temp_dijkstra_rev, ACT_MOVE_0SEC + (motion & 0x1F) + 1);
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_MOVE_0SEC + (motion & 0x1F));
         } else if (motion == Tr45in) {
             printf("Tr45in <- ");
             uint8_deque_push_front(&temp_dijkstra_rev, ACT_S45_in_RIGHT);
@@ -831,10 +831,9 @@ uint16_t dijkstra(const Wall* wall ,uint8_t goalx, uint8_t goaly, uint8_t goalhv
 
 uint8_vector solver_time_based_dijekstra_init(void) {
     uint8_vector_init(&action_queue);
-    uint8_vector_push(&action_queue, ACT_MOVE_FIRST_HALF_CELL);
 
-    // Dijkstra経路計算を実行 (ゴール: (7,7), HV=自動選択, 加速有効, 表示有効)
-    dijkstra(&wallone, 7, 7, DONT_CHOOSE_HV, false, true);
+    // Dijkstra経路計算を実行 (ゴール: (7,7), HV=自動選択, 加速, 表示)
+    dijkstra(&wallone, 7, 7, DONT_CHOOSE_HV, true, false);
 
     uint8_t s = temp_dijkstra_rev.size;
     for (int8_t i = 0; i < s; i++) {
@@ -842,6 +841,11 @@ uint8_vector solver_time_based_dijekstra_init(void) {
     }
 
     uint8_vector_push(&action_queue, ACT_FINISH);
+
+    if (ACT_MOVE_0SEC <= action_queue.value[0] <= ACT_MOVE_32SEC) {
+        action_queue.value[0] += 2;
+    }
+
     return action_queue;
 }
 
