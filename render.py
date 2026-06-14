@@ -226,6 +226,7 @@ class MazeApp:
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(None, 32)
         self.paused = True
+        self.no_render = False
         self.solver_selection_open = False
         self.solver_selection_index = 0
         self.solver_list = []
@@ -250,6 +251,8 @@ class MazeApp:
                         self.solver_selection_open = not self.solver_selection_open
                     elif event.key == pygame.K_i:
                         commands.append(("REINIT_CURRENT_SOLVER", None))
+                    elif event.key == pygame.K_n:
+                        self.no_render = not self.no_render
                     elif self.solver_selection_open:
                         if event.key == pygame.K_UP:
                             self.solver_selection_index = max(0, self.solver_selection_index - 1)
@@ -295,6 +298,7 @@ class MazeApp:
             "PAUSED - Press SPACE or P to resume",
             "D: toggle solver selector",
             "I: reinitialize current solver",
+            "N: toggle rendering skip",
             "1-9: init solver from solver_config.json",
         ]
         if current_solver:

@@ -153,10 +153,16 @@ class MazeSimulation:
             if self.app.paused:
                 self._process_pause_commands(commands)
             else:
-                self._process_next_step()
+                while True:
+                    self._process_next_step()
 
-                if self.read_wall and not self.result:
-                    self._read_and_update_walls()
+                    if self.read_wall and not self.result:
+                        self._read_and_update_walls()
+                    
+                    if not self.app.no_render or self.app.paused:
+                        self.app.no_render = False
+                        break
+                    
 
             self.app.draw()
             self.app.draw_mouse(self.rend_pos.x, self.rend_pos.y, self.rend_pos.dir)
