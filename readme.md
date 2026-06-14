@@ -1,12 +1,15 @@
-# Maze Simulator Python C v2
+# Maze Simulator Python-C V2
 
-マイクロマウスの迷路シミュレータ。Pythonで実装されたシミュレータとC言語で実装されたソルバーアルゴリズムを組み合わせたプロジェクトです。
+マイクロマウスの迷路シミュレーター  
+Pythonで実装されたシミュレータとC言語で実装されたソルバーアルゴリズムを組み合わせたプロジェクトです。
+
+https://github.com/user-attachments/assets/7bbd9405-3f24-4bff-a597-ca004da9034e
 
 ## 概要
 
 このプロジェクトは迷路シミュレータを提供し、異なるアルゴリズムによる迷路解法を実装・テストできます。
 - Pythonでの迷路管理と描画
-- C言語での実機に導入できるソルバー
+- C言語で実機に導入できるソルバー
 - 迷路画像のパースと処理
 
 ## 要件
@@ -23,6 +26,12 @@
    または
    https://github.com/akiaki96/maze_sim_py_c_v2
    からダウンロード
+
+1. 仮想環境を作成：
+   ```
+   cd [project dir]
+   python3 -m venv myenv
+   ```
 
 1. 仮想環境を有効化：
    ```
@@ -145,8 +154,7 @@ python solver_api.py
 
 ## ライセンス
 
-MIT License
-
+MIT License  
 Copyright (c) 2026 akiaki96
 
 ## 参考資料
