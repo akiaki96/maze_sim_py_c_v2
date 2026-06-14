@@ -1,6 +1,7 @@
 import sys
 
 import pygame
+import math
 from typing import Tuple
 from maze import Maze
 from parse_maze_image import parse_maze_image
@@ -186,6 +187,8 @@ class MazeRenderer:
         pygame.draw.circle(screen, self.mouse_color, (cx, cy), r)
 
         # 方向線
+        # 斜め方向は成分を等しくして45度方向に伸ばす
+        diag = int(round(r / math.sqrt(2)))
         if direction == Dir.NORTH:
             tip = (cx, cy - r)
         elif direction == Dir.SOUTH:
@@ -194,8 +197,16 @@ class MazeRenderer:
             tip = (cx + r, cy)
         elif direction == Dir.WEST:
             tip = (cx - r, cy)
+        elif direction == Dir.NORTHEAST:
+            tip = (cx + diag, cy - diag)
+        elif direction == Dir.NORTHWEST:
+            tip = (cx - diag, cy - diag)
+        elif direction == Dir.SOUTHEAST:
+            tip = (cx + diag, cy + diag)
+        elif direction == Dir.SOUTHWEST:
+            tip = (cx - diag, cy + diag)
         else:
-            tip = (cx, cy)  # 斜めはとりあえず描かない
+            tip = (cx, cy)
 
         pygame.draw.line(screen, self.mouse_dir_color, (cx, cy), tip, 3)
 
