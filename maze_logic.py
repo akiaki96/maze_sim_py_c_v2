@@ -254,12 +254,12 @@ class MazeSimulation:
         else:
             action_name = self.num2act[now]
             print(f"Action: {action_name} ({now})")
-            if self.act2num["ACT_MOVE_1SEC"] <= now <= self.act2num["ACT_MOVE_32SEC"]:
-                for _ in range(now - self.act2num["ACT_MOVE_1SEC"] + 1):
-                    self.result.append(expand_action("ACT_MOVE_HALF", self.action_dict))
-            elif self.act2num["ACT_MOVE_1SEC_DIA"] <= now <= self.act2num["ACT_MOVE_32SEC_DIA"]:
-                for _ in range(now - self.act2num["ACT_MOVE_1SEC_DIA"] + 1):
-                    self.result.append(expand_action("ACT_MOVE_HALF", self.action_dict))
+            if self.act2num["ACT_MOVE_0SEC"] <= now <= self.act2num["ACT_MOVE_32SEC"]:
+                for _ in range(now - self.act2num["ACT_MOVE_0SEC"]):
+                    self.result.append(expand_action("ACT_MOVE_HALF", self.action_dict)[0])
+            elif self.act2num["ACT_MOVE_0SEC_DIA"] <= now <= self.act2num["ACT_MOVE_32SEC_DIA"]:
+                for _ in range(now - self.act2num["ACT_MOVE_0SEC_DIA"]):
+                    self.result.append(expand_action("ACT_MOVE_HALF", self.action_dict)[0])
             else:
                 expanded_steps = expand_action(action_name, self.action_dict)
                 for step in reversed(expanded_steps):

@@ -76,7 +76,7 @@
         "sequence": [
             "ACT_MOVE_HALF",
             "ACT_ROTATE_45",
-            "ACT_MOSVE_HALF"
+            "ACT_MOVE_HALF"
         ]
     },
 
@@ -92,7 +92,7 @@
         "sequence": [
             "ACT_MOVE_HALF",
             "ACT_ROTATE_45",
-            "ACT_MOSVE_HALF"
+            "ACT_MOVE_HALF"
         ]
     },
 

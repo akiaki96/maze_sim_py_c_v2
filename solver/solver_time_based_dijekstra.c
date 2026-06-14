@@ -217,8 +217,9 @@ void dijkstra_show_path(uint32_t prvdirl[16][16][4], uint8_t goalx, uint8_t goal
     printf("\n");
 }
 
+uint8_deque temp_dijkstra_rev;
+
 void dijkstra_gen_path(uint32_t prvdirl[16][16][4], uint8_t goalx, uint8_t goaly, uint8_t goalhv) {
-    Deque_uint8_init(&route);
     uint32_t nowpos = prvdirl[goalx][goaly][goalhv];
 
     uint8_t nowx  = goalx;
@@ -226,66 +227,66 @@ void dijkstra_gen_path(uint32_t prvdirl[16][16][4], uint8_t goalx, uint8_t goaly
     uint8_t nowhv = goalhv;
     uint8_t nxtx, nxty, nxthv;
     uint8_t motion;
+
+    uint8_deque_init(&temp_dijkstra_rev);
+
     while (!(nowx == 0 && nowy == 0 && nowhv == 0)) {
         motion = Psg_motion(prvdirl[nowx][nowy][nowhv]);
-        // vec_uint8_push(&route, motion);
-        // vec_uint8_insert(&route, 0, motion);
-        Deque_uint8_push_front(&route, motion);
         printf("%d ", motion);
         if (motion & T0dia) {
             printf("T0dia %2d <- ", motion & 0x1F);
-            uint8_vector_push(&action_queue, ACT_MOVE_0SEC_DIA + (motion & 0x1F));
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_MOVE_0SEC_DIA + (motion & 0x1F));
         } else if (motion & T0grd) {
             printf("T0grd %2d <- ", motion & 0x1F);
-            uint8_vector_push(&action_queue, ACT_MOVE_0SEC + (motion & 0x1F));
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_MOVE_0SEC + (motion & 0x1F) + 1);
         } else if (motion == Tr45in) {
             printf("Tr45in <- ");
-            uint8_vector_push(&action_queue, ACT_S45_in_RIGHT);
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_S45_in_RIGHT);
         } else if (motion == Tl45in) {
             printf("Tl45in <- ");
-            uint8_vector_push(&action_queue, ACT_S45_in_LEFT);
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_S45_in_LEFT);
         } else if (motion == Tr45out) {
             printf("Tr45out <- ");
-            uint8_vector_push(&action_queue, ACT_S45_out_RIGHT);
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_S45_out_RIGHT);
         } else if (motion == Tl45out) {
             printf("Tl45out <- ");
-            uint8_vector_push(&action_queue, ACT_S45_out_LEFT);
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_S45_out_LEFT);
         } else if (motion == Tr135in) {
             printf("Tr135in <- ");
-            uint8_vector_push(&action_queue, ACT_S135_in_RIGHT);
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_S135_in_RIGHT);
         } else if (motion == Tl135in) {
             printf("Tl135in <- ");
-            uint8_vector_push(&action_queue, ACT_S135_in_LEFT);
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_S135_in_LEFT);
         } else if (motion == Tr135out) {
             printf("Tr135out <- ");
-            uint8_vector_push(&action_queue, ACT_S135_out_RIGHT);
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_S135_out_RIGHT);
         } else if (motion == Tl135out) {
             printf("Tl135out <- ");
-            uint8_vector_push(&action_queue, ACT_S135_out_LEFT);
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_S135_out_LEFT);
         } else if (motion == TrV90) {
             printf("TrV90 <- ");
-            uint8_vector_push(&action_queue, ACT_V90_RIGHT);
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_V90_RIGHT);
         } else if (motion == TlV90) {
             printf("TlV90 <- ");
-            uint8_vector_push(&action_queue, ACT_V90_LEFT);
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_V90_LEFT);
         } else if (motion == Tr90) {
             printf("Tr90 <- ");
-            uint8_vector_push(&action_queue, ACT_S90_RIGHT);
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_S90_RIGHT);
         } else if (motion == Tl90) {
             printf("Tl90 <- ");
-            uint8_vector_push(&action_queue, ACT_S90_LEFT);
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_S90_LEFT);
         } else if (motion == Tr180) {
             printf("Tr180 <- ");
-            uint8_vector_push(&action_queue, ACT_S180_RIGHT);
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_S180_RIGHT);
         } else if (motion == Tl180) {
             printf("Tl180 <- ");
-            uint8_vector_push(&action_queue, ACT_S180_LEFT);
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_S180_LEFT);
         } else if (motion == Trs90) {
             printf("Trs90 <- ");
-            uint8_vector_push(&action_queue, ACT_S90_RIGHT);
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_S90_RIGHT);
         } else if (motion == Tls90) {
             printf("Tls90 <- ");
-            uint8_vector_push(&action_queue, ACT_S90_LEFT);
+            uint8_deque_push_front(&temp_dijkstra_rev, ACT_S90_LEFT);
         } else {
             printf("STOP ");
         }
@@ -545,6 +546,7 @@ uint16_t dijkstra(const Wall* wall ,uint8_t goalx, uint8_t goaly, uint8_t goalhv
     MazeBit visited[4];
     uint32_t prvdirl[16][16][4];
     uint8_vector goals;
+    uint8_vector_init(&goals);
     uint8_vector_push(&goals, xy_to_pos(7,7));
     genDIR45
 
@@ -829,9 +831,15 @@ uint16_t dijkstra(const Wall* wall ,uint8_t goalx, uint8_t goaly, uint8_t goalhv
 
 uint8_vector solver_time_based_dijekstra_init(void) {
     uint8_vector_init(&action_queue);
+    uint8_vector_push(&action_queue, ACT_MOVE_FIRST_HALF_CELL);
 
-    // Dijkstra経路計算を実行 (ゴール: (7,7), HV=0, 加速有効, 表示無効)
-    dijkstra(&wallzero, 7, 7, 0, true, false);
+    // Dijkstra経路計算を実行 (ゴール: (7,7), HV=自動選択, 加速有効, 表示有効)
+    dijkstra(&wallone, 7, 7, DONT_CHOOSE_HV, false, true);
+
+    uint8_t s = temp_dijkstra_rev.size;
+    for (int8_t i = 0; i < s; i++) {
+        uint8_vector_push(&action_queue, uint8_deque_pop_front(&temp_dijkstra_rev));
+    }
 
     uint8_vector_push(&action_queue, ACT_FINISH);
     return action_queue;
